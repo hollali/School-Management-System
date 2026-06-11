@@ -11,11 +11,6 @@ use Illuminate\Http\Request;
 
 class ResultController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
         $results = Result::with(['student.user', 'subject', 'exam', 'grade'])->latest()->paginate(15);

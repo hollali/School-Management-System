@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ConversationController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
         $conversations = Conversation::with('creator')->latest()->paginate(15);

@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class SchoolClassController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
         $classes = SchoolClass::with('teacher', 'students')->latest()->paginate(15);

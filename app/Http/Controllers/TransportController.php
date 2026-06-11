@@ -7,11 +7,6 @@ use Illuminate\Http\Request;
 
 class TransportController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
         $transports = Transport::latest()->paginate(15);

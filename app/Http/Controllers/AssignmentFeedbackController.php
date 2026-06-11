@@ -3,63 +3,86 @@
 namespace App\Http\Controllers;
 
 use App\Models\AssignmentFeedback;
+use App\Models\Submission;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class AssignmentFeedbackController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $feedbacks = AssignmentFeedback::with(['submission.assignment', 'teacher.user'])
+            ->latest()
+            ->paginate(15);
+
+        return view('assignment_feedback.index', compact('feedbacks'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $submissions = Submission::with('assignment', 'student.user')
+            ->whereDoesntHave('feedback')
+            ->get();
+
+        $teachers = Teacher::with('user')->latest()->get();
+
+        return view('assignment_feedback.create', compact('submissions', 'teachers'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'submission_id' => ['required', 'exists:submissions,id'],
+            'teacher_id'    => ['required', 'exists:teachers,id'],
+            'comments'      => ['nullable', 'string'],
+            'score'         => ['nullable', 'numeric', 'min:0', 'max:100'],
+        ]);
+
+        AssignmentFeedback::create($data);
+
+        return redirect()->route('assignment-feedback.index')
+            ->with('success', 'Feedback created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(AssignmentFeedback $assignmentFeedback)
     {
-        //
+        $assignmentFeedback->load(['submission.student.user', 'submission.assignment', 'teacher.user']);
+
+        return view('assignment_feedback.show', compact('assignmentFeedback'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(AssignmentFeedback $assignmentFeedback)
     {
-        //
+        $submissions = Submission::with('assignment', 'student.user')
+            ->whereDoesntHave('feedback')
+            ->orWhere('id', $assignmentFeedback->submission_id)
+            ->get();
+
+        $teachers = Teacher::with('user')->latest()->get();
+
+        return view('assignment_feedback.edit', compact('assignmentFeedback', 'submissions', 'teachers'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, AssignmentFeedback $assignmentFeedback)
     {
-        //
+        $data = $request->validate([
+            'submission_id' => ['required', 'exists:submissions,id'],
+            'teacher_id'    => ['required', 'exists:teachers,id'],
+            'comments'      => ['nullable', 'string'],
+            'score'         => ['nullable', 'numeric', 'min:0', 'max:100'],
+        ]);
+
+        $assignmentFeedback->update($data);
+
+        return redirect()->route('assignment-feedback.index')
+            ->with('success', 'Feedback updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(AssignmentFeedback $assignmentFeedback)
     {
-        //
+        $assignmentFeedback->delete();
+
+        return redirect()->route('assignment-feedback.index')
+            ->with('success', 'Feedback deleted successfully.');
     }
 }

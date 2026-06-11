@@ -31,13 +31,20 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // School Management resources
+    // Student Management
     Route::resource('students', StudentController::class);
-    Route::resource('school-classes', SchoolClassController::class);
+
+    // Classes
+    Route::resource('classes', SchoolClassController::class);
 
     // Attendance
     Route::resource('attendances', AttendanceController::class);
     Route::resource('attendance-records', AttendanceRecordController::class);
+
+    // Academics
+    Route::resource('subjects', SubjectController::class);
+    Route::resource('exams', ExamController::class);
+    Route::resource('results', ResultController::class);
 
     // Homework
     Route::resource('assignments', AssignmentController::class);
@@ -46,12 +53,8 @@ Route::middleware('auth')->group(function () {
 
     // Messaging
     Route::resource('conversations', ConversationController::class);
+    Route::post('conversations/{conversation}/message', [ConversationController::class, 'message'])->name('conversations.message');
     Route::resource('messages', MessageController::class);
-
-    // Academics
-    Route::resource('subjects', SubjectController::class);
-    Route::resource('exams', ExamController::class);
-    Route::resource('results', ResultController::class);
 
     // Fees
     Route::resource('fees', FeeController::class);

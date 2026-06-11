@@ -15,11 +15,6 @@ use Illuminate\View\View;
 
 class StudentController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index(Request $request): View
     {
         $query = Student::with(['user', 'parent.user', 'classes']);

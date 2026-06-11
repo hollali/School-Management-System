@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class BehaviorController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
         $behaviors = Behavior::with('student.user')->latest()->paginate(15);
