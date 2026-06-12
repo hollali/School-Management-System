@@ -3,10 +3,12 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-white">{{ __('Attendance Sheet') }}</h2>
             <div class="flex items-center gap-2">
-                <a href="{{ route('attendances.edit', $attendance) }}"
-                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                    {{ __('Edit') }}
-                </a>
+                @if(Auth::user()->hasRole('Teacher'))
+                    <a href="{{ route('attendances.edit', $attendance) }}"
+                        class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
+                        {{ __('Edit') }}
+                    </a>
+                @endif
                 <a href="{{ route('attendances.index') }}"
                     class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
                     {{ __('Back to list') }}
@@ -71,6 +73,7 @@
                                             {{ ucfirst($record->status) }}
                                         </span>
                                     </td>
+                                    @if(Auth::user()->hasRole('Teacher'))
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <form action="{{ route('attendance-records.update', $record) }}" method="POST" class="inline">
                                             @csrf
@@ -84,6 +87,9 @@
                                             </select>
                                         </form>
                                     </td>
+                                    @else
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm"></td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>

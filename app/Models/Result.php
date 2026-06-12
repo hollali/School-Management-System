@@ -16,6 +16,7 @@ class Result extends Model
         'score',
         'grade_id',
         'remarks',
+        'teacher_id',
     ];
 
     public function student()
@@ -36,5 +37,10 @@ class Result extends Model
     public function grade()
     {
         return $this->belongsTo(Grade::class);
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
     }
 }

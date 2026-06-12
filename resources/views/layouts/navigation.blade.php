@@ -1,3 +1,11 @@
+@php
+$user = Auth::user();
+$isAdmin = $user->hasRole('Admin');
+$isTeacher = $user->hasRole('Teacher');
+$isStudent = $user->hasRole('Student');
+$isParent = $user->hasRole('Parent');
+@endphp
+
 <div x-data="{ open: false }">
     {{-- Mobile hamburger --}}
     <div class="lg:hidden fixed top-0 left-0 z-50 p-4">
@@ -28,42 +36,133 @@
 
             {{-- Nav Links --}}
             <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+
+                {{-- Dashboard --}}
                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     <i class="fa-solid fa-gauge-high w-5 text-center"></i>
                     <span>{{ __('Dashboard') }}</span>
                 </x-nav-link>
-                <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
-                    <i class="fa-solid fa-user-graduate w-5 text-center"></i>
-                    <span>{{ __('Students') }}</span>
-                </x-nav-link>
-                <x-nav-link :href="route('classes.index')" :active="request()->routeIs('classes.*')">
-                    <i class="fa-solid fa-school w-5 text-center"></i>
-                    <span>{{ __('Classes') }}</span>
-                </x-nav-link>
-                <x-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.*')">
-                    <i class="fa-solid fa-book-open w-5 text-center"></i>
-                    <span>{{ __('Subjects') }}</span>
-                </x-nav-link>
-                <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
-                    <i class="fa-solid fa-check-to-slot w-5 text-center"></i>
-                    <span>{{ __('Attendance') }}</span>
-                </x-nav-link>
-                <x-nav-link :href="route('exams.index')" :active="request()->routeIs('exams.*')">
-                    <i class="fa-solid fa-pen-to-square w-5 text-center"></i>
-                    <span>{{ __('Exams') }}</span>
-                </x-nav-link>
-                <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')">
-                    <i class="fa-solid fa-file-pen w-5 text-center"></i>
-                    <span>{{ __('Homework') }}</span>
-                </x-nav-link>
+
+                @if($isAdmin || $isTeacher)
+                    {{-- Students --}}
+                    <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
+                        <i class="fa-solid fa-user-graduate w-5 text-center"></i>
+                        <span>{{ __('Students') }}</span>
+                    </x-nav-link>
+                @endif
+
+                @if($isAdmin)
+                    {{-- Classes --}}
+                    <x-nav-link :href="route('classes.index')" :active="request()->routeIs('classes.*')">
+                        <i class="fa-solid fa-school w-5 text-center"></i>
+                        <span>{{ __('Classes') }}</span>
+                    </x-nav-link>
+
+                    {{-- Subjects --}}
+                    <x-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.*')">
+                        <i class="fa-solid fa-book-open w-5 text-center"></i>
+                        <span>{{ __('Subjects') }}</span>
+                    </x-nav-link>
+                @endif
+
+                @if($isTeacher)
+                    {{-- Classes (Teacher) --}}
+                    <x-nav-link :href="route('classes.index')" :active="request()->routeIs('classes.*')">
+                        <i class="fa-solid fa-school w-5 text-center"></i>
+                        <span>{{ __('My Classes') }}</span>
+                    </x-nav-link>
+
+                    {{-- Attendance --}}
+                    <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
+                        <i class="fa-solid fa-check-to-slot w-5 text-center"></i>
+                        <span>{{ __('Attendance') }}</span>
+                    </x-nav-link>
+
+                    {{-- Exams --}}
+                    <x-nav-link :href="route('exams.index')" :active="request()->routeIs('exams.*')">
+                        <i class="fa-solid fa-pen-to-square w-5 text-center"></i>
+                        <span>{{ __('Exams') }}</span>
+                    </x-nav-link>
+
+                    {{-- Results --}}
+                    <x-nav-link :href="route('results.index')" :active="request()->routeIs('results.*')">
+                        <i class="fa-solid fa-chart-simple w-5 text-center"></i>
+                        <span>{{ __('Results') }}</span>
+                    </x-nav-link>
+
+                    {{-- Assignments --}}
+                    <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')">
+                        <i class="fa-solid fa-file-pen w-5 text-center"></i>
+                        <span>{{ __('Assignments') }}</span>
+                    </x-nav-link>
+                @endif
+
+                @if($isStudent)
+                    {{-- My Classes --}}
+                    <x-nav-link :href="route('classes.index')" :active="request()->routeIs('classes.*')">
+                        <i class="fa-solid fa-school w-5 text-center"></i>
+                        <span>{{ __('My Classes') }}</span>
+                    </x-nav-link>
+
+                    {{-- Assignments --}}
+                    <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')">
+                        <i class="fa-solid fa-file-pen w-5 text-center"></i>
+                        <span>{{ __('Homework') }}</span>
+                    </x-nav-link>
+
+                    {{-- Results --}}
+                    <x-nav-link :href="route('results.index')" :active="request()->routeIs('results.*')">
+                        <i class="fa-solid fa-chart-simple w-5 text-center"></i>
+                        <span>{{ __('Results') }}</span>
+                    </x-nav-link>
+                @endif
+
+                @if($isParent)
+                    {{-- Assignments (view child's) --}}
+                    <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')">
+                        <i class="fa-solid fa-file-pen w-5 text-center"></i>
+                        <span>{{ __('Homework') }}</span>
+                    </x-nav-link>
+
+                    {{-- Attendance (view child's) --}}
+                    <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
+                        <i class="fa-solid fa-check-to-slot w-5 text-center"></i>
+                        <span>{{ __('Attendance') }}</span>
+                    </x-nav-link>
+
+                    {{-- Results (view child's) --}}
+                    <x-nav-link :href="route('results.index')" :active="request()->routeIs('results.*')">
+                        <i class="fa-solid fa-chart-simple w-5 text-center"></i>
+                        <span>{{ __('Results') }}</span>
+                    </x-nav-link>
+
+                    {{-- Fees --}}
+                    <x-nav-link :href="route('fees.index')" :active="request()->routeIs('fees.*')">
+                        <i class="fa-solid fa-sack-dollar w-5 text-center"></i>
+                        <span>{{ __('Fees') }}</span>
+                    </x-nav-link>
+                @endif
+
+                {{-- Messages --}}
                 <x-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')">
                     <i class="fa-solid fa-message w-5 text-center"></i>
                     <span>{{ __('Messages') }}</span>
                 </x-nav-link>
-                <x-nav-link :href="route('fees.index')" :active="request()->routeIs('fees.*')">
-                    <i class="fa-solid fa-sack-dollar w-5 text-center"></i>
-                    <span>{{ __('Fees') }}</span>
+
+                {{-- Notifications --}}
+                <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                    <i class="fa-solid fa-bell w-5 text-center"></i>
+                    <span>{{ __('Notifications') }}</span>
                 </x-nav-link>
+
+                {{-- Admin user management --}}
+                @if($isAdmin)
+                    <div class="border-t border-gray-100 my-3"></div>
+                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                        <i class="fa-solid fa-users-gear w-5 text-center"></i>
+                        <span>{{ __('User Management') }}</span>
+                    </x-nav-link>
+                @endif
 
                 <div class="border-t border-gray-100 my-3"></div>
 
@@ -76,10 +175,10 @@
             {{-- User footer --}}
             <div class="border-t border-gray-200 p-4 shrink-0">
                 <div class="flex items-center gap-3 mb-3">
-                    <span class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 text-white text-sm font-bold flex items-center justify-center shrink-0">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                    <img src="{{ $user->profile_photo_url }}" alt="" class="w-9 h-9 rounded-full shrink-0">
                     <div class="min-w-0 flex-1">
-                        <div class="text-sm font-semibold text-gray-800 truncate">{{ Auth::user()->name }}</div>
-                        <div class="text-xs text-gray-400 truncate">{{ Auth::user()->email }}</div>
+                        <div class="text-sm font-semibold text-gray-800 truncate">{{ $user->name }}</div>
+                        <div class="text-xs text-gray-400 truncate">{{ $user->role }}</div>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">

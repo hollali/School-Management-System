@@ -15,10 +15,16 @@ class Exam extends Model
         'exam_date',
         'term',
         'academic_year',
+        'teacher_id',
     ];
 
     public function results()
     {
         return $this->hasMany(Result::class);
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
     }
 }

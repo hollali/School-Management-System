@@ -2,10 +2,12 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-white">{{ __('Subjects') }}</h2>
-            <a href="{{ route('subjects.create') }}"
-                class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                {{ __('New Subject') }}
-            </a>
+            @if(Auth::user()->hasRole('Admin'))
+                <a href="{{ route('subjects.create') }}"
+                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
+                    {{ __('New Subject') }}
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -31,15 +33,17 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $subject->teacher?->user->name ?? '—' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $subject->credits ?? '—' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('subjects.edit', $subject) }}"
-                                            class="text-sky-600 hover:text-sky-800 font-medium mr-3">Edit</a>
-                                        <form action="{{ route('subjects.destroy', $subject) }}" method="POST"
-                                            class="inline-block"
-                                            onsubmit="return confirm('Delete this subject?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
-                                        </form>
+                                        @if(Auth::user()->hasRole('Admin'))
+                                            <a href="{{ route('subjects.edit', $subject) }}"
+                                                class="text-sky-600 hover:text-sky-800 font-medium mr-3">Edit</a>
+                                            <form action="{{ route('subjects.destroy', $subject) }}" method="POST"
+                                                class="inline-block"
+                                                onsubmit="return confirm('Delete this subject?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

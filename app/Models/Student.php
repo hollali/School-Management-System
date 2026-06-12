@@ -36,7 +36,16 @@ class Student extends Model
             ->withTimestamps();
     }
 
-    // Query Scopes
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class, 'student_id');
+    }
+
+    public function results()
+    {
+        return $this->hasMany(Result::class, 'student_id');
+    }
+
     public function scopeSearchByName($query, $name)
     {
         return $query->whereHas('user', function ($q) use ($name) {
@@ -80,4 +89,3 @@ class Student extends Model
         });
     }
 }
-

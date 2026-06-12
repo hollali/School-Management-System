@@ -15,6 +15,12 @@ class SchoolClassController extends Controller
         return view('classes.index', compact('classes'));
     }
 
+    public function show(SchoolClass $class)
+    {
+        $class->load('teacher.user', 'students.user', 'subjects');
+        return view('classes.show', compact('class'));
+    }
+
     public function create()
     {
         $teachers = Teacher::with('user')->orderBy('id')->get();

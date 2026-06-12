@@ -16,6 +16,7 @@ class Attendance extends Model
         'attendance_date',
         'created_by',
         'notes',
+        'teacher_id',
     ];
 
     public function schoolClass()
@@ -26,6 +27,11 @@ class Attendance extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
     }
 
     public function records()

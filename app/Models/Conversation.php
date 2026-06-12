@@ -12,6 +12,11 @@ class Conversation extends Model
     protected $fillable = [
         'subject',
         'created_by',
+        'is_group',
+    ];
+
+    protected $casts = [
+        'is_group' => 'boolean',
     ];
 
     public function creator()
@@ -22,5 +27,10 @@ class Conversation extends Model
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function participants()
+    {
+        return $this->belongsToMany(User::class, 'conversation_user');
     }
 }

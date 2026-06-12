@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SchoolClassController;
@@ -14,22 +15,26 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\FeeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/dashboard');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Admin - User Management
+    Route::middleware('role:Admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users', UserController::class);
+    });
 
     // Student Management
     Route::resource('students', StudentController::class);
@@ -60,6 +65,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('fees', FeeController::class);
     Route::resource('payments', PaymentController::class);
     Route::resource('receipts', ReceiptController::class);
+
+    // Notifications
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/{notification}', [NotificationController::class, 'show'])->name('notifications.show');
+    Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
 });
 
 require __DIR__.'/auth.php';

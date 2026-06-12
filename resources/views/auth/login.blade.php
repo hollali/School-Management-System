@@ -87,10 +87,8 @@ $roles = ['Student', 'Parent', 'Teacher', 'Admin'];
             Sign in
         </button>
 
-        <!-- Register link -->
         <p class="text-center text-sm text-gray-500">
-            Don't have an account?
-            <a href="{{ route('register') }}" class="text-sky-600 hover:text-sky-800 font-medium">Create one</a>
+            Contact your school administrator to get an account.
         </p>
     </form>
 

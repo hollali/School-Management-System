@@ -8,18 +8,34 @@ use App\Models\ParentProfile;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class StudentController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request): View
     {
-        $query = Student::with(['user', 'parent.user', 'classes']);
+        $user = Auth::user();
 
-        // Filtering
+        if ($user->hasRole('Admin') || $user->hasRole('Teacher')) {
+            $query = Student::with(['user', 'parent.user', 'classes']);
+        } elseif ($user->hasRole('Parent')) {
+            $studentIds = $user->parentProfile?->students->pluck('id') ?? [];
+            $query = Student::with(['user', 'parent.user', 'classes'])
+                ->whereIn('id', $studentIds);
+        } elseif ($user->hasRole('Student')) {
+            $query = Student::with(['user', 'parent.user', 'classes'])
+                ->where('id', $user->student?->id);
+        } else {
+            abort(403);
+        }
+
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -48,6 +64,8 @@ class StudentController extends Controller
 
     public function create(): View
     {
+        $this->authorize('manage-users');
+
         $classes = SchoolClass::orderBy('name')->get();
         $parents = ParentProfile::with('user')->orderBy('id')->get();
 
@@ -56,9 +74,10 @@ class StudentController extends Controller
 
     public function store(StoreStudentRequest $request): RedirectResponse
     {
+        $this->authorize('manage-users');
+
         $validated = $request->validated();
 
-        // Create user
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -67,7 +86,6 @@ class StudentController extends Controller
 
         $user->assignRole('Student');
 
-        // Create student record
         $student = Student::create([
             'user_id' => $user->id,
             'admission_number' => $validated['admission_number'] ?? null,
@@ -78,7 +96,6 @@ class StudentController extends Controller
             'parent_id' => $validated['parent_id'] ?? null,
         ]);
 
-        // Assign to class if provided
         if (!empty($validated['class_id'])) {
             $student->classes()->sync([
                 $validated['class_id'] => [
@@ -94,6 +111,15 @@ class StudentController extends Controller
 
     public function show(Student $student): View
     {
+        $user = Auth::user();
+
+        if ($user->hasRole('Student') && $user->student?->id !== $student->id) {
+            abort(403);
+        }
+        if ($user->hasRole('Parent') && !$user->parentProfile?->students->pluck('id')->contains($student->id)) {
+            abort(403);
+        }
+
         $student->load(['user', 'parent.user', 'classes.subjects']);
 
         return view('students.show', compact('student'));
@@ -101,6 +127,8 @@ class StudentController extends Controller
 
     public function edit(Student $student): View
     {
+        $this->authorize('manage-users');
+
         $classes = SchoolClass::orderBy('name')->get();
         $parents = ParentProfile::with('user')->orderBy('id')->get();
 
@@ -109,9 +137,10 @@ class StudentController extends Controller
 
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
+        $this->authorize('manage-users');
+
         $validated = $request->validated();
 
-        // Update user
         $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -123,7 +152,6 @@ class StudentController extends Controller
 
         $student->user()->update($updateData);
 
-        // Update student
         $student->update([
             'admission_number' => $validated['admission_number'] ?? null,
             'date_of_birth' => $validated['date_of_birth'] ?? null,
@@ -133,7 +161,6 @@ class StudentController extends Controller
             'parent_id' => $validated['parent_id'] ?? null,
         ]);
 
-        // Update class assignment
         if (!empty($validated['class_id'])) {
             $student->classes()->sync([
                 $validated['class_id'] => [
@@ -151,6 +178,8 @@ class StudentController extends Controller
 
     public function destroy(Student $student): RedirectResponse
     {
+        $this->authorize('manage-users');
+
         $student->user()->delete();
         $student->delete();
 

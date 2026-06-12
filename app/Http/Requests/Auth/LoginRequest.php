@@ -51,16 +51,8 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        // If a role was provided, ensure the authenticated user has that role
-        $role = $this->string('role') ?: null;
-        if ($role && Auth::user() && ! method_exists(Auth::user(), 'hasRole') ) {
-            // If roles system not available, ignore role check
-            RateLimiter::clear($this->throttleKey());
-            return;
-        }
-
-        if ($role && Auth::user() && ! Auth::user()->hasRole($role)) {
-            // role mismatch - logout and return error
+        $role = $this->input('role') ?: null;
+        if ($role && Auth::user() && method_exists(Auth::user(), 'hasRole') && ! Auth::user()->hasRole($role)) {
             Auth::logout();
             RateLimiter::hit($this->throttleKey());
 
