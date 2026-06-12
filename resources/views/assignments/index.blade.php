@@ -59,13 +59,19 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('assignments.show', $assignment) }}" class="text-sky-600 hover:text-sky-800 font-medium mr-3">View</a>
+                                        <a href="{{ route('assignments.show', $assignment) }}" title="View" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
                                         @if(Auth::user()->hasRole('Teacher'))
-                                            <a href="{{ route('assignments.edit', $assignment) }}" class="text-sky-600 hover:text-sky-800 font-medium mr-3">Edit</a>
+                                            <a href="{{ route('assignments.edit', $assignment) }}" title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
                                             <form action="{{ route('assignments.destroy', $assignment) }}" method="POST" class="inline" onsubmit="return confirm('Delete this assignment?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                                                <button type="submit" title="Delete" class="inline-flex items-center justify-center w-8 h-8 text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
                                             </form>
                                         @endif
                                     </td>

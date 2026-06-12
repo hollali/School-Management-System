@@ -33,13 +33,19 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $attendance->creator->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $attendance->notes ?: '—' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('attendances.show', $attendance) }}" class="text-sky-600 hover:text-sky-800 font-medium mr-3">View</a>
+                                        <a href="{{ route('attendances.show', $attendance) }}" title="View" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
                                         @if(Auth::user()->hasRole('Teacher'))
-                                            <a href="{{ route('attendances.edit', $attendance) }}" class="text-sky-600 hover:text-sky-800 font-medium mr-3">Edit</a>
+                                            <a href="{{ route('attendances.edit', $attendance) }}" title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
                                             <form action="{{ route('attendances.destroy', $attendance) }}" method="POST" class="inline" onsubmit="return confirm('Delete this attendance record?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                                                <button type="submit" title="Delete" class="inline-flex items-center justify-center w-8 h-8 text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
                                             </form>
                                         @endif
                                     </td>

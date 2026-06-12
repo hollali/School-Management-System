@@ -35,13 +35,17 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $class->section ?? '—' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $class->teacher?->user?->name ?? 'Unassigned' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $class->students->count() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-1">
                                         @if(Auth::user()->hasRole('Admin'))
-                                            <a href="{{ route('classes.edit', $class) }}" class="text-sky-600 hover:text-sky-800 font-medium">Edit</a>
+                                            <a href="{{ route('classes.edit', $class) }}" title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
                                             <form action="{{ route('classes.destroy', $class) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this class?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                                                <button type="submit" title="Delete" class="inline-flex items-center justify-center w-8 h-8 text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
                                             </form>
                                         @endif
                                     </td>

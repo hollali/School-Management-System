@@ -2,11 +2,13 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-white">{{ __('Students') }}</h2>
-            <a href="{{ route('students.create') }}"
-                class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                {{ __('New Student') }}
-            </a>
+            @if(Auth::user()->hasRole('Admin'))
+                <a href="{{ route('students.create') }}"
+                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                    {{ __('New Student') }}
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -33,13 +35,19 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $student->admission_number ?? '—' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $student->classes->pluck('name')->join(', ') ?: 'Unassigned' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $student->parent?->user?->name ?? 'None' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                        <a href="{{ route('students.edit', $student) }}" class="text-sky-600 hover:text-sky-800 font-medium">Edit</a>
-                                        <form action="{{ route('students.destroy', $student) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this student profile?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
-                                        </form>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-1">
+                                        @if(Auth::user()->hasRole('Admin'))
+                                            <a href="{{ route('students.edit', $student) }}" title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+                                            <form action="{{ route('students.destroy', $student) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this student profile?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" title="Delete" class="inline-flex items-center justify-center w-8 h-8 text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

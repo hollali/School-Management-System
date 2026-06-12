@@ -48,14 +48,20 @@
                                         {{ $conversation->created_at->format('M d, Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-right">
-                                        <a href="{{ route('conversations.show', $conversation) }}" class="text-sky-600 hover:text-sky-800 font-medium mr-3">View</a>
-                                        <form action="{{ route('conversations.destroy', $conversation) }}" method="POST"
-                                            class="inline-block"
-                                            onsubmit="return confirm('Delete this conversation?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
-                                        </form>
+                                        <a href="{{ route('conversations.show', $conversation) }}" title="View" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        @unless(Auth::user()->hasRole('Parent'))
+                                            <form action="{{ route('conversations.destroy', $conversation) }}" method="POST"
+                                                class="inline-block"
+                                                onsubmit="return confirm('Delete this conversation?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" title="Delete" class="inline-flex items-center justify-center w-8 h-8 text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        @endunless
                                     </td>
                                 </tr>
                             @empty

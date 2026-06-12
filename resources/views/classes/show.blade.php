@@ -71,13 +71,17 @@
 
             <div class="flex gap-2">
                 @can('manage-classes')
-                    <a href="{{ route('classes.edit', $class) }}" class="flex-1 text-center px-4 py-2 bg-amber-50 text-amber-700 rounded-lg text-sm font-semibold hover:bg-amber-100 transition">
-                        <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                    <a href="{{ route('classes.edit', $class) }}" title="Edit"
+                        class="inline-flex items-center justify-center w-10 h-10 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition">
+                        <i class="fa-solid fa-pen-to-square"></i>
                     </a>
                 @endcan
-                <a href="{{ route('attendances.create', ['class_id' => $class->id]) }}" class="flex-1 text-center px-4 py-2 bg-sky-50 text-sky-700 rounded-lg text-sm font-semibold hover:bg-sky-100 transition">
-                    <i class="fa-solid fa-check-to-slot mr-1"></i> Attendance
-                </a>
+                @if(Auth::user()->hasRole('Teacher'))
+                    <a href="{{ route('attendances.create', ['class_id' => $class->id]) }}" title="Take Attendance"
+                        class="inline-flex items-center justify-center w-10 h-10 bg-sky-50 text-sky-700 rounded-lg hover:bg-sky-100 transition">
+                        <i class="fa-solid fa-check-to-slot"></i>
+                    </a>
+                @endif
             </div>
         </div>
     </div>

@@ -11,10 +11,15 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-50 flex">
+    <div class="min-h-screen bg-gray-50 flex"
+         x-data="{ collapsed: false }"
+         x-init="collapsed = localStorage.getItem('sidebarCollapsed') === 'true'"
+         @toggle-sidebar.window="collapsed = !collapsed; localStorage.setItem('sidebarCollapsed', collapsed)"
+         :class="{'lg:ms-20': collapsed, 'lg:ms-64': !collapsed}">
+
         @include('layouts.navigation')
 
-        <div class="flex-1 flex flex-col min-w-0 lg:ms-64">
+        <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out">
             @isset($header)
                 <header class="bg-gradient-to-r from-sky-600 to-cyan-600 shadow-lg">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

@@ -3,19 +3,19 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-white">{{ __('Receipt') }}</h2>
             <div class="flex gap-2">
-                <a href="{{ route('receipts.edit', $receipt) }}"
-                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    {{ __('Edit') }}
+                @if(Auth::user()->hasRole('Admin'))
+                    <a href="{{ route('receipts.edit', $receipt) }}" title="Edit"
+                        class="inline-flex items-center justify-center w-9 h-9 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                @endif
+                <a onclick="window.print()" title="Print"
+                    class="inline-flex items-center justify-center w-9 h-9 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition cursor-pointer">
+                    <i class="fa-solid fa-print"></i>
                 </a>
-                <a onclick="window.print()" class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center cursor-pointer">
-                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                    {{ __('Print') }}
-                </a>
-                <a href="{{ route('receipts.index') }}"
-                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    {{ __('Back') }}
+                <a href="{{ route('receipts.index') }}" title="Back"
+                    class="inline-flex items-center justify-center w-9 h-9 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition">
+                    <i class="fa-solid fa-arrow-left"></i>
                 </a>
             </div>
         </div>

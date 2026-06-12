@@ -3,13 +3,15 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-white">{{ __('Submission Details') }}</h2>
             <div class="flex items-center gap-2">
-                <a href="{{ route('submissions.edit', $submission) }}"
-                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                    {{ __('Edit') }}
-                </a>
-                <a href="{{ route('submissions.index') }}"
-                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                    {{ __('Back to list') }}
+                @if(Auth::user()->hasRole('Teacher'))
+                    <a href="{{ route('submissions.edit', $submission) }}" title="Edit"
+                        class="inline-flex items-center justify-center w-9 h-9 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                @endif
+                <a href="{{ route('submissions.index') }}" title="Back to list"
+                    class="inline-flex items-center justify-center w-9 h-9 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition">
+                    <i class="fa-solid fa-arrow-left"></i>
                 </a>
             </div>
         </div>
@@ -90,21 +92,25 @@
                             <p class="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{{ $submission->feedback->comments }}</p>
                         </div>
                     @endif
-                    <div class="mt-6">
-                        <a href="{{ route('assignment-feedback.edit', $submission->feedback) }}"
-                            class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
-                            Edit feedback
-                        </a>
-                    </div>
+                    @if(Auth::user()->hasRole('Teacher'))
+                        <div class="mt-6">
+                            <a href="{{ route('assignment-feedback.edit', $submission->feedback) }}" title="Edit feedback"
+                                class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                        </div>
+                    @endif
                 @else
                     <div class="bg-gray-50/50 rounded-xl p-6 text-center">
                         <p class="text-sm text-gray-500">No feedback yet.</p>
-                        <div class="mt-4">
-                            <a href="{{ route('assignment-feedback.create') }}"
-                                class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
-                                Add feedback
-                            </a>
-                        </div>
+                        @if(Auth::user()->hasRole('Teacher'))
+                            <div class="mt-4">
+                                <a href="{{ route('assignment-feedback.create') }}" title="Add feedback"
+                                    class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-sky-600 to-cyan-600 text-white rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
+                                    <i class="fa-solid fa-plus"></i>
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 @endif
             </div>

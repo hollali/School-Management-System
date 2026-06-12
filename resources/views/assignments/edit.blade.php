@@ -17,19 +17,7 @@
                     @method('PUT')
 
                     <div class="grid grid-cols-1 gap-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Teacher</label>
-                                <select name="teacher_id"
-                                    class="block w-full rounded-xl border-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 bg-white">
-                                    <option value="">Select Teacher</option>
-                                    @foreach($teachers as $teacher)
-                                        <option value="{{ $teacher->id }}" {{ old('teacher_id', $assignment->teacher_id) == $teacher->id ? 'selected' : '' }}>{{ $teacher->user->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('teacher_id')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
-                            </div>
-
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Class</label>
                                 <select name="class_id"

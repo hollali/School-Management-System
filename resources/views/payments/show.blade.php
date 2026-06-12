@@ -3,15 +3,15 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-white">{{ __('Payment Details') }}</h2>
             <div class="flex gap-2">
-                <a href="{{ route('payments.edit', $payment) }}"
-                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    {{ __('Edit') }}
-                </a>
-                <a href="{{ route('payments.index') }}"
-                    class="bg-white/20 hover:bg-white/30 text-white rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-sm inline-flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    {{ __('Back') }}
+                @if(Auth::user()->hasRole('Admin'))
+                    <a href="{{ route('payments.edit', $payment) }}" title="Edit"
+                        class="inline-flex items-center justify-center w-9 h-9 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                @endif
+                <a href="{{ route('payments.index') }}" title="Back"
+                    class="inline-flex items-center justify-center w-9 h-9 text-white/80 hover:text-white hover:bg-white/20 rounded-xl transition">
+                    <i class="fa-solid fa-arrow-left"></i>
                 </a>
             </div>
         </div>
