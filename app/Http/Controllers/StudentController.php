@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
 use Illuminate\View\View;
 
 class StudentController extends Controller
@@ -58,18 +59,17 @@ class StudentController extends Controller
         }
 
         $students = $query->latest()->paginate(15)->appends($request->query());
-
-        return view('students.index', compact('students'));
-    }
-
-    public function create(): View
-    {
-        $this->authorize('manage-users');
-
         $classes = SchoolClass::orderBy('name')->get();
         $parents = ParentProfile::with('user')->orderBy('id')->get();
 
-        return view('students.create', compact('classes', 'parents'));
+        return view('students.index', compact('students', 'classes', 'parents'));
+    }
+
+    public function create(): RedirectResponse
+    {
+        $this->authorize('manage-users');
+
+        return redirect()->route('students.index');
     }
 
     public function store(StoreStudentRequest $request): RedirectResponse
@@ -125,14 +125,11 @@ class StudentController extends Controller
         return view('students.show', compact('student'));
     }
 
-    public function edit(Student $student): View
+    public function edit(Student $student): RedirectResponse
     {
         $this->authorize('manage-users');
 
-        $classes = SchoolClass::orderBy('name')->get();
-        $parents = ParentProfile::with('user')->orderBy('id')->get();
-
-        return view('students.edit', compact('student', 'classes', 'parents'));
+        return redirect()->route('students.index');
     }
 
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
@@ -185,5 +182,73 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')
             ->with('success', 'Student profile deleted successfully.');
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('Admin') || $user->hasRole('Teacher')) {
+            $query = Student::with(['user', 'parent.user', 'classes']);
+        } elseif ($user->hasRole('Parent')) {
+            $studentIds = $user->parentProfile?->students->pluck('id') ?? [];
+            $query = Student::with(['user', 'parent.user', 'classes'])
+                ->whereIn('id', $studentIds);
+        } elseif ($user->hasRole('Student')) {
+            $query = Student::with(['user', 'parent.user', 'classes'])
+                ->where('id', $user->student?->id);
+        } else {
+            abort(403);
+        }
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->searchByName($search)
+                  ->orSearchByAdmissionNumber($search)
+                  ->orSearchByEmail($search);
+            });
+        }
+
+        if ($request->has('class_id')) {
+            $query->byClass($request->input('class_id'));
+        }
+
+        if ($request->has('parent_id')) {
+            $query->byParent($request->input('parent_id'));
+        }
+
+        if ($request->has('gender')) {
+            $query->byGender($request->input('gender'));
+        }
+
+        $students = $query->latest()->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="students.csv"',
+        ];
+
+        $callback = function () use ($students) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Name', 'Email', 'Admission Number', 'Class(es)', 'Parent', 'Gender', 'Phone', 'Address']);
+
+            foreach ($students as $student) {
+                fputcsv($handle, [
+                    $student->user->name ?? '',
+                    $student->user->email ?? '',
+                    $student->admission_number ?? '',
+                    $student->classes->pluck('name')->join(', '),
+                    $student->parent?->user?->name ?? '',
+                    $student->gender ?? '',
+                    $student->phone ?? '',
+                    $student->address ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 }

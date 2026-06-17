@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class ReceiptController extends Controller
 {
@@ -12,14 +13,14 @@ class ReceiptController extends Controller
     {
         $receipts = Receipt::with('payment.fee.student.user')->latest()->paginate(15);
 
-        return view('receipts.index', compact('receipts'));
+        $payments = Payment::with('fee.student.user')->get();
+
+        return view('receipts.index', compact('receipts', 'payments'));
     }
 
     public function create()
     {
-        $payments = Payment::with('fee.student.user')->get();
-
-        return view('receipts.create', compact('payments'));
+        return redirect()->route('receipts.index');
     }
 
     public function store(Request $request)
@@ -45,9 +46,7 @@ class ReceiptController extends Controller
 
     public function edit(Receipt $receipt)
     {
-        $payments = Payment::with('fee.student.user')->get();
-
-        return view('receipts.edit', compact('receipt', 'payments'));
+        return redirect()->route('receipts.index');
     }
 
     public function update(Request $request, Receipt $receipt)
@@ -69,5 +68,35 @@ class ReceiptController extends Controller
         $receipt->delete();
 
         return redirect()->route('receipts.index')->with('success', 'Receipt deleted successfully.');
+    }
+
+    public function exportCsv()
+    {
+        $receipts = Receipt::with('payment.fee.student.user')->latest()->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="receipts.csv"',
+        ];
+
+        $callback = function () use ($receipts) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Receipt #', 'Payment Ref', 'Student', 'Amount', 'Issued Date', 'Notes']);
+
+            foreach ($receipts as $receipt) {
+                fputcsv($handle, [
+                    $receipt->receipt_number ?? '',
+                    $receipt->payment->reference ?? '',
+                    $receipt->payment->fee->student->user->name ?? '',
+                    number_format($receipt->payment->amount, 2),
+                    $receipt->issued_at ? $receipt->issued_at->format('Y-m-d') : '',
+                    $receipt->notes ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 }

@@ -31,18 +31,17 @@ class AssignmentController extends Controller
 
         $assignments = $query->latest()->paginate(15);
 
-        return view('assignments.index', compact('assignments'));
+        $classes = optional(Auth::user()->teacher)->classes ?? collect();
+        $subjects = Subject::latest()->get();
+
+        return view('assignments.index', compact('assignments', 'classes', 'subjects'));
     }
 
     public function create()
     {
         $this->authorize('create', Assignment::class);
 
-        $teacher = Auth::user()->teacher;
-        $classes = SchoolClass::where('teacher_id', $teacher->id)->latest()->get();
-        $subjects = Subject::latest()->get();
-
-        return view('assignments.create', compact('classes', 'subjects'));
+        return redirect()->route('assignments.index');
     }
 
     public function store(Request $request)
@@ -79,11 +78,7 @@ class AssignmentController extends Controller
     {
         $this->authorize('update', $assignment);
 
-        $teacher = Auth::user()->teacher;
-        $classes = SchoolClass::where('teacher_id', $teacher->id)->latest()->get();
-        $subjects = Subject::latest()->get();
-
-        return view('assignments.edit', compact('assignment', 'classes', 'subjects'));
+        return redirect()->route('assignments.index');
     }
 
     public function update(Request $request, Assignment $assignment)

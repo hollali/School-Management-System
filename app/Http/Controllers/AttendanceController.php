@@ -30,7 +30,13 @@ class AttendanceController extends Controller
 
         $attendances = $query->latest()->paginate(15);
 
-        return view('attendance.index', compact('attendances'));
+        $classes = collect();
+        if ($user->hasRole('Teacher')) {
+            $teacher = $user->teacher;
+            $classes = SchoolClass::where('teacher_id', $teacher->id)->orderBy('name')->get();
+        }
+
+        return view('attendance.index', compact('attendances', 'classes'));
     }
 
     public function show(Attendance $attendance)
@@ -51,10 +57,7 @@ class AttendanceController extends Controller
     {
         $this->authorize('create', Attendance::class);
 
-        $teacher = Auth::user()->teacher;
-        $classes = SchoolClass::where('teacher_id', $teacher->id)->orderBy('name')->get();
-
-        return view('attendance.create', compact('classes'));
+        return redirect()->route('attendance.index');
     }
 
     public function store(Request $request)
@@ -94,10 +97,7 @@ class AttendanceController extends Controller
     {
         $this->authorize('update', $attendance);
 
-        $teacher = Auth::user()->teacher;
-        $classes = SchoolClass::where('teacher_id', $teacher->id)->orderBy('name')->get();
-
-        return view('attendance.edit', compact('attendance', 'classes'));
+        return redirect()->route('attendance.index');
     }
 
     public function update(Request $request, Attendance $attendance)

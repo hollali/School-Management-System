@@ -7,6 +7,7 @@ use App\Models\Fee;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class FeeController extends Controller
@@ -33,16 +34,16 @@ class FeeController extends Controller
 
         $fees = $query->latest()->paginate(15);
 
-        return view('fees.index', compact('fees'));
+        $students = Student::with('user')->orderBy('id')->get();
+
+        return view('fees.index', compact('fees', 'students'));
     }
 
     public function create()
     {
         $this->authorize('manage-users');
 
-        $students = Student::with('user')->orderBy('id')->get();
-
-        return view('fees.create', compact('students'));
+        return redirect()->route('fees.index');
     }
 
     public function store(Request $request)
@@ -85,9 +86,7 @@ class FeeController extends Controller
     {
         $this->authorize('manage-users');
 
-        $students = Student::with('user')->orderBy('id')->get();
-
-        return view('fees.edit', compact('fee', 'students'));
+        return redirect()->route('fees.index');
     }
 
     public function update(Request $request, Fee $fee)
@@ -118,5 +117,50 @@ class FeeController extends Controller
         $fee->delete();
 
         return redirect()->route('fees.index')->with('success', 'Fee record deleted successfully.');
+    }
+
+    public function exportCsv()
+    {
+        $user = Auth::user();
+        $query = Fee::with('student.user');
+
+        if ($user->hasRole('Admin')) {
+        } elseif ($user->hasRole('Teacher')) {
+            $studentIds = Student::whereHas('classes', fn($q) => $q->whereIn('class_id', $user->teacher?->classes->pluck('id') ?? []))
+                ->pluck('id');
+            $query->whereIn('student_id', $studentIds);
+        } elseif ($user->hasRole('Student')) {
+            $query->where('student_id', $user->student?->id);
+        } elseif ($user->hasRole('Parent')) {
+            $studentIds = $user->parentProfile?->students->pluck('id') ?? [];
+            $query->whereIn('student_id', $studentIds);
+        }
+
+        $fees = $query->latest()->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="fees.csv"',
+        ];
+
+        $callback = function () use ($fees) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Invoice #', 'Student', 'Amount', 'Due Date', 'Status', 'Description']);
+
+            foreach ($fees as $fee) {
+                fputcsv($handle, [
+                    $fee->invoice_number ?? '',
+                    $fee->student->user->name ?? '',
+                    number_format($fee->amount, 2),
+                    $fee->due_date ? $fee->due_date->format('Y-m-d') : '',
+                    $fee->status ?? '',
+                    $fee->description ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 }

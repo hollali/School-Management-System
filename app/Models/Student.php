@@ -19,6 +19,13 @@ class Student extends Model
         'parent_id',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'date_of_birth' => 'date',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

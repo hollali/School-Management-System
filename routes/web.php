@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
 
     // Student Management
     Route::resource('students', StudentController::class);
+    Route::get('students/export-csv', [StudentController::class, 'exportCsv'])->name('students.export-csv');
 
     // Classes
     Route::resource('classes', SchoolClassController::class);
@@ -63,8 +64,11 @@ Route::middleware('auth')->group(function () {
 
     // Fees
     Route::resource('fees', FeeController::class);
+    Route::get('fees/export-csv', [FeeController::class, 'exportCsv'])->name('fees.export-csv');
     Route::resource('payments', PaymentController::class);
+    Route::get('payments/export-csv', [PaymentController::class, 'exportCsv'])->name('payments.export-csv');
     Route::resource('receipts', ReceiptController::class);
+    Route::get('receipts/export-csv', [ReceiptController::class, 'exportCsv'])->name('receipts.export-csv');
 
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');

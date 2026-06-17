@@ -31,21 +31,21 @@ class ResultController extends Controller
 
         $results = $query->latest()->paginate(15);
 
-        return view('results.index', compact('results'));
+        $teacher = Auth::user()->teacher;
+        $classIds = $teacher?->classes->pluck('id') ?? [];
+        $students = Student::whereHas('classes', fn($q) => $q->whereIn('class_id', $classIds))
+            ->with('user')->orderBy('id')->get();
+        $subjects = Subject::orderBy('name')->get();
+        $exams = Exam::where('teacher_id', $teacher?->id)->orderBy('name')->get();
+
+        return view('results.index', compact('results', 'students', 'subjects', 'exams'));
     }
 
     public function create()
     {
         $this->authorize('create', Result::class);
 
-        $teacher = Auth::user()->teacher;
-        $classIds = $teacher->classes->pluck('id');
-        $students = Student::whereHas('classes', fn($q) => $q->whereIn('class_id', $classIds))
-            ->with('user')->orderBy('id')->get();
-        $subjects = Subject::orderBy('name')->get();
-        $exams = Exam::where('teacher_id', $teacher->id)->orderBy('name')->get();
-
-        return view('results.create', compact('students', 'subjects', 'exams'));
+        return redirect()->route('results.index');
     }
 
     public function store(Request $request)
@@ -83,14 +83,7 @@ class ResultController extends Controller
     {
         $this->authorize('update', $result);
 
-        $teacher = Auth::user()->teacher;
-        $classIds = $teacher->classes->pluck('id');
-        $students = Student::whereHas('classes', fn($q) => $q->whereIn('class_id', $classIds))
-            ->with('user')->orderBy('id')->get();
-        $subjects = Subject::orderBy('name')->get();
-        $exams = Exam::where('teacher_id', $teacher->id)->orderBy('name')->get();
-
-        return view('results.edit', compact('result', 'students', 'subjects', 'exams'));
+        return redirect()->route('results.index');
     }
 
     public function update(Request $request, Result $result)

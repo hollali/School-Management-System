@@ -1,9 +1,9 @@
 <section>
     <header>
-        <h2 class="text-lg font-bold text-gray-900">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-slate-200">
             {{ __('Profile Information') }}
         </h2>
-        <p class="mt-1 text-sm text-gray-500">
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
             {{ __("Update your account's profile information, email, and photo.") }}
         </p>
     </header>
@@ -29,14 +29,14 @@
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
-                    <p class="text-sm mt-2 text-gray-800">
+                    <p class="text-sm mt-2 text-gray-800 dark:text-slate-200">
                         {{ __('Your email address is unverified.') }}
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        <button form="send-verification" class="underline text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-800 focus:ring-sky-500">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
+                        <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
                             {{ __('A new verification link has been sent to your email address.') }}
                         </p>
                     @endif
@@ -47,11 +47,11 @@
         <div>
             <x-input-label for="profile_photo" :value="__('Profile Photo')" />
             <div class="mt-1 flex items-center gap-4">
-                <img src="{{ $user->profile_photo_url }}" alt="" class="w-14 h-14 rounded-full object-cover border border-gray-200">
+                <img src="{{ $user->profile_photo_url }}" alt="" class="w-14 h-14 rounded-full object-cover border border-gray-200 dark:border-slate-700">
                 <input id="profile_photo" name="profile_photo" type="file" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
-                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 transition">
+                       class="block w-full text-sm text-gray-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-sky-50 dark:file:bg-sky-900/30 file:text-sky-700 dark:file:text-sky-300 hover:file:bg-sky-100 dark:hover:file:bg-sky-800/50 transition">
             </div>
-            <p class="text-xs text-gray-400 mt-1">JPEG, PNG, JPG, GIF, or WebP. Max 2MB.</p>
+            <p class="text-xs text-gray-400 dark:text-slate-500 mt-1">JPEG, PNG, JPG, GIF, or WebP. Max 2MB.</p>
             <x-input-error class="mt-2" :messages="$errors->get('profile_photo')" />
         </div>
 
@@ -59,7 +59,7 @@
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
-                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)" class="text-sm text-emerald-600 font-medium">
+                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)" class="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
                     {{ __('Saved.') }}
                 </p>
             @endif

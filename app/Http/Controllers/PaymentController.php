@@ -6,6 +6,7 @@ use App\Models\Fee;
 use App\Models\Payment;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class PaymentController extends Controller
 {
@@ -13,16 +14,14 @@ class PaymentController extends Controller
     {
         $payments = Payment::with('fee.student.user')->latest()->paginate(15);
 
-        return view('payments.index', compact('payments'));
+        $fees = Fee::with('student.user')->get();
+
+        return view('payments.index', compact('payments', 'fees'));
     }
 
     public function create()
     {
-        $fees = Fee::with('student.user')
-            ->whereIn('status', ['pending', 'partial'])
-            ->get();
-
-        return view('payments.create', compact('fees'));
+        return redirect()->route('payments.index');
     }
 
     public function store(Request $request)
@@ -56,12 +55,7 @@ class PaymentController extends Controller
 
     public function edit(Payment $payment)
     {
-        $fees = Fee::with('student.user')
-            ->whereIn('status', ['pending', 'partial'])
-            ->orWhere('id', $payment->fee_id)
-            ->get();
-
-        return view('payments.edit', compact('payment', 'fees'));
+        return redirect()->route('payments.index');
     }
 
     public function update(Request $request, Payment $payment)
@@ -89,5 +83,36 @@ class PaymentController extends Controller
         $payment->delete();
 
         return redirect()->route('payments.index')->with('success', 'Payment deleted successfully.');
+    }
+
+    public function exportCsv()
+    {
+        $payments = Payment::with('fee.student.user')->latest()->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="payments.csv"',
+        ];
+
+        $callback = function () use ($payments) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['Fee Ref', 'Student', 'Amount', 'Method', 'Date', 'Status', 'Reference']);
+
+            foreach ($payments as $payment) {
+                fputcsv($handle, [
+                    $payment->fee->invoice_number ?? '',
+                    $payment->fee->student->user->name ?? '',
+                    number_format($payment->amount, 2),
+                    $payment->method ?? '',
+                    $payment->paid_at ? $payment->paid_at->format('Y-m-d') : '',
+                    $payment->status ?? '',
+                    $payment->reference ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 }

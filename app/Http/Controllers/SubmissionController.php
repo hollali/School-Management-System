@@ -16,15 +16,15 @@ class SubmissionController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('submissions.index', compact('submissions'));
+        $assignments = Assignment::latest()->get();
+        $students = Student::with('user')->latest()->get();
+
+        return view('submissions.index', compact('submissions', 'assignments', 'students'));
     }
 
     public function create()
     {
-        $assignments = Assignment::latest()->get();
-        $students = Student::with('user')->latest()->get();
-
-        return view('submissions.create', compact('assignments', 'students'));
+        return redirect()->route('submissions.index');
     }
 
     public function store(Request $request)
@@ -59,10 +59,7 @@ class SubmissionController extends Controller
 
     public function edit(Submission $submission)
     {
-        $assignments = Assignment::latest()->get();
-        $students = Student::with('user')->latest()->get();
-
-        return view('submissions.edit', compact('submission', 'assignments', 'students'));
+        return redirect()->route('submissions.index');
     }
 
     public function update(Request $request, Submission $submission)

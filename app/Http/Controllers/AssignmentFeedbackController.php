@@ -15,18 +15,18 @@ class AssignmentFeedbackController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('assignment_feedback.index', compact('feedbacks'));
-    }
-
-    public function create()
-    {
         $submissions = Submission::with('assignment', 'student.user')
             ->whereDoesntHave('feedback')
             ->get();
 
         $teachers = Teacher::with('user')->latest()->get();
 
-        return view('assignment_feedback.create', compact('submissions', 'teachers'));
+        return view('assignment_feedback.index', compact('feedbacks', 'submissions', 'teachers'));
+    }
+
+    public function create()
+    {
+        return redirect()->route('assignment-feedback.index');
     }
 
     public function store(Request $request)
@@ -53,14 +53,7 @@ class AssignmentFeedbackController extends Controller
 
     public function edit(AssignmentFeedback $assignmentFeedback)
     {
-        $submissions = Submission::with('assignment', 'student.user')
-            ->whereDoesntHave('feedback')
-            ->orWhere('id', $assignmentFeedback->submission_id)
-            ->get();
-
-        $teachers = Teacher::with('user')->latest()->get();
-
-        return view('assignment_feedback.edit', compact('assignmentFeedback', 'submissions', 'teachers'));
+        return redirect()->route('assignment-feedback.index');
     }
 
     public function update(Request $request, AssignmentFeedback $assignmentFeedback)

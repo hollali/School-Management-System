@@ -29,7 +29,7 @@ class ConversationController extends Controller
             abort(403, 'Parents cannot create new conversations.');
         }
 
-        return view('conversations.create');
+        return redirect()->route('conversations.index');
     }
 
     public function store(Request $request)

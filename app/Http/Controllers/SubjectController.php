@@ -11,15 +11,14 @@ class SubjectController extends Controller
     public function index()
     {
         $subjects = Subject::with('teacher')->latest()->paginate(15);
+        $teachers = Teacher::with('user')->orderBy('id')->get();
 
-        return view('subjects.index', compact('subjects'));
+        return view('subjects.index', compact('subjects', 'teachers'));
     }
 
     public function create()
     {
-        $teachers = Teacher::with('user')->orderBy('id')->get();
-
-        return view('subjects.create', compact('teachers'));
+        return redirect()->route('subjects.index');
     }
 
     public function store(Request $request)
@@ -39,9 +38,7 @@ class SubjectController extends Controller
 
     public function edit(Subject $subject)
     {
-        $teachers = Teacher::with('user')->orderBy('id')->get();
-
-        return view('subjects.edit', compact('subject', 'teachers'));
+        return redirect()->route('subjects.index');
     }
 
     public function update(Request $request, Subject $subject)

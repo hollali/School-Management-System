@@ -52,7 +52,7 @@
         </div>
 
         <!-- Right side - Form -->
-        <div class="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-gray-50">
+        <div class="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-gray-50 dark:bg-slate-900">
             <div class="w-full max-w-md">
                 <div class="lg:hidden flex justify-center mb-8">
                     <div class="bg-gradient-to-br from-sky-600 to-cyan-600 p-3 rounded-2xl shadow-lg">
@@ -63,11 +63,11 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-8 sm:p-10">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-slate-900/50 p-8 sm:p-10">
                     {{ $slot }}
                 </div>
 
-                <p class="text-center text-sm text-gray-400 mt-8">
+                <p class="text-center text-sm text-gray-400 dark:text-slate-500 mt-8">
                     &copy; {{ date('Y') }} School Management System. All rights reserved.
                 </p>
             </div>

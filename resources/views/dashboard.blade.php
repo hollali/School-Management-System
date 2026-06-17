@@ -10,20 +10,23 @@ use App\Models\Conversation;
 use Carbon\Carbon;
 @endphp
 
+@section('title', 'Dashboard')
+
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold text-white">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-slate-200">
             {{ __('Dashboard') }}
         </h2>
-        <p class="text-sm text-white/80 mt-1">Welcome back, {{ Auth::user()->name }}</p>
+        <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">Welcome back, {{ Auth::user()->name }}</p>
     </x-slot>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+    <div class="py-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Total Students</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ Student::count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Total Students</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ Student::count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-sky-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,11 +36,11 @@ use Carbon\Carbon;
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Total Teachers</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ Teacher::count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Total Teachers</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ Teacher::count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -47,11 +50,11 @@ use Carbon\Carbon;
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Total Classes</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ SchoolClass::count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Total Classes</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ SchoolClass::count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,11 +64,11 @@ use Carbon\Carbon;
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Total Parents</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ ParentProfile::count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Total Parents</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ ParentProfile::count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center shadow-lg shadow-purple-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,11 +78,11 @@ use Carbon\Carbon;
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Today's Attendance</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ Attendance::whereDate('attendance_date', Carbon::today())->count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Today's Attendance</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ Attendance::whereDate('attendance_date', Carbon::today())->count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center shadow-lg shadow-rose-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,11 +92,11 @@ use Carbon\Carbon;
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Pending Fees</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ Fee::where('status', 'pending')->count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Pending Fees</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ Fee::where('status', 'pending')->count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -103,11 +106,11 @@ use Carbon\Carbon;
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Pending Assignments</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ Assignment::where('due_date', '>=', Carbon::now())->count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Pending Assignments</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ Assignment::where('due_date', '>=', Carbon::now())->count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -117,11 +120,11 @@ use Carbon\Carbon;
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Active Conversations</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-1">{{ Conversation::count() }}</p>
+                    <p class="text-sm font-medium text-gray-500 dark:text-slate-400">Active Conversations</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-slate-200 mt-1">{{ Conversation::count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-200/50">
                     <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,11 +135,11 @@ use Carbon\Carbon;
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6">
-        <h3 class="text-lg font-bold text-gray-900 mb-5">{{ __('Quick Actions') }}</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-slate-200 mb-5">{{ __('Quick Actions') }}</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @if(Auth::user()->hasRole('Admin'))
-                <a href="{{ route('students.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-md shadow-sky-200/50">
+                <a href="{{ route('students.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-md shadow-sky-200/50">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                     </svg>
@@ -144,13 +147,13 @@ use Carbon\Carbon;
                 </a>
             @endif
             @if(Auth::user()->hasRole('Teacher'))
-                <a href="{{ route('attendances.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition shadow-sm">
+                <a href="{{ route('attendances.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition shadow-sm">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     {{ __('Take Attendance') }}
                 </a>
-                <a href="{{ route('assignments.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition shadow-sm">
+                <a href="{{ route('assignments.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition shadow-sm">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
@@ -158,7 +161,7 @@ use Carbon\Carbon;
                 </a>
             @endif
             @if(Auth::user()->hasRole('Admin'))
-                <a href="{{ route('fees.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition shadow-sm">
+                <a href="{{ route('fees.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition shadow-sm">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -167,4 +170,5 @@ use Carbon\Carbon;
             @endif
         </div>
     </div>
+</div>
 </x-app-layout>

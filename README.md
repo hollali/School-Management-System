@@ -26,6 +26,7 @@ A Laravel 13 application for managing schools with strict Role-Based Access Cont
 - **Profile photos** — upload or auto-generated avatars
 - **Activity logging** — all critical actions logged for audit
 - **Collapsible sidebar** — persists across page loads
+- **Dark mode** — manual toggle with sun/moon button in sidebar; preference persisted to localStorage
 - **Responsive layout** — mobile-friendly with off-canvas navigation
 
 ## Requirements
@@ -91,7 +92,7 @@ composer test
 
 - **Framework**: Laravel 13
 - **Authorization**: Spatie Laravel Permission + Laravel Policies
-- **Frontend**: Alpine.js, Tailwind CSS, Font Awesome 6
+- **Frontend**: Alpine.js, Tailwind CSS (with dark mode class strategy), Font Awesome 6
 - **Icons**: Font Awesome (free-solid)
 - **Database**: SQLite / MySQL
 - **Assets**: Vite

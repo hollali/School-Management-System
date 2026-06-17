@@ -27,7 +27,7 @@ class ExamController extends Controller
     public function create()
     {
         $this->authorize('create', Exam::class);
-        return view('exams.create');
+        return redirect()->route('exams.index');
     }
 
     public function store(Request $request)
@@ -54,7 +54,7 @@ class ExamController extends Controller
     public function edit(Exam $exam)
     {
         $this->authorize('update', $exam);
-        return view('exams.edit', compact('exam'));
+        return redirect()->route('exams.index');
     }
 
     public function update(Request $request, Exam $exam)

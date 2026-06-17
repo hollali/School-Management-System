@@ -11,8 +11,9 @@ class SchoolClassController extends Controller
     public function index()
     {
         $classes = SchoolClass::with('teacher', 'students')->latest()->paginate(15);
+        $teachers = Teacher::with('user')->orderBy('id')->get();
 
-        return view('classes.index', compact('classes'));
+        return view('classes.index', compact('classes', 'teachers'));
     }
 
     public function show(SchoolClass $class)
@@ -23,9 +24,7 @@ class SchoolClassController extends Controller
 
     public function create()
     {
-        $teachers = Teacher::with('user')->orderBy('id')->get();
-
-        return view('classes.create', compact('teachers'));
+        return redirect()->route('classes.index');
     }
 
     public function store(Request $request)
@@ -46,9 +45,7 @@ class SchoolClassController extends Controller
 
     public function edit(SchoolClass $class)
     {
-        $teachers = Teacher::with('user')->orderBy('id')->get();
-
-        return view('classes.edit', compact('class', 'teachers'));
+        return redirect()->route('classes.index');
     }
 
     public function update(Request $request, SchoolClass $class)

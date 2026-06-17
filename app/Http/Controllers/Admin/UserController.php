@@ -44,9 +44,9 @@ class UserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        return view('admin.users.create');
+        return redirect()->route('admin.users.index');
     }
 
     public function store(Request $request): RedirectResponse
@@ -79,10 +79,9 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
-    public function edit(User $user): View
+    public function edit(User $user): RedirectResponse
     {
-        $user->load('roles');
-        return view('admin.users.edit', compact('user'));
+        return redirect()->route('admin.users.index');
     }
 
     public function update(Request $request, User $user): RedirectResponse

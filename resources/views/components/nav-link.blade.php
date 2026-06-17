@@ -1,21 +1,14 @@
-@props(['active' => false, 'collapsed' => false, 'label' => ''])
+@props(['active' => false, 'label' => ''])
 
 @php
-$expanded = $collapsed
-    ? 'flex items-center justify-center px-3 py-2.5 text-sm rounded-lg border-l-4 border-transparent transition duration-150 ease-in-out'
-    : 'flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg border-l-4 transition duration-150 ease-in-out';
-
-$activeClasses = 'bg-sky-50 text-sky-700 border-sky-600 font-semibold';
-$inactiveClasses = 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-transparent font-medium';
-
-$classes = ($active ?? false)
-    ? "$expanded $activeClasses"
-    : "$expanded $inactiveClasses";
+$baseClasses = 'flex items-center w-full text-sm rounded-lg transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900';
+$activeClasses = 'bg-sky-600 dark:bg-sky-600 text-white font-semibold shadow-sm shadow-sky-500/20';
+$inactiveClasses = 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-white/[0.10] dark:hover:text-white font-medium';
 @endphp
 
-<a {{ $attributes->merge(['class' => $classes]) }}
-   @if($collapsed && $label)
-   title="{{ $label }}"
-   @endif>
+<a {{ $attributes->merge(['class' => trim("$baseClasses " . ($active ? $activeClasses : $inactiveClasses))]) }}
+   x-bind:class="collapsed ? 'justify-center mx-2 py-3' : 'gap-3 px-3 py-2.5'"
+   x-bind:title="collapsed ? '{{ $label }}' : ''"
+   @if($active) aria-current="page" @endif>
     {{ $slot }}
 </a>
