@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
     // Admin - User Management
     Route::middleware('role:Admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class);
+        Route::get('class-assignments', [SchoolClassController::class, 'assignmentPage'])->name('class-assignments');
+        Route::post('class-assignments', [SchoolClassController::class, 'bulkAssign'])->name('class-assignments.store');
     });
 
     // Student Management
@@ -42,6 +44,8 @@ Route::middleware('auth')->group(function () {
 
     // Classes
     Route::resource('classes', SchoolClassController::class);
+    Route::post('classes/{class}/students', [SchoolClassController::class, 'assignStudent'])->name('classes.students.assign');
+    Route::delete('classes/{class}/students/{student}', [SchoolClassController::class, 'removeStudent'])->name('classes.students.remove');
 
     // Attendance
     Route::resource('attendances', AttendanceController::class);

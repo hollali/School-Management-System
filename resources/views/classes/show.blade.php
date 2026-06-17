@@ -18,16 +18,39 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-6">
                     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
-                        <h3 class="text-base font-bold text-gray-900 dark:text-slate-200 mb-4">Students</h3>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-gray-900 dark:text-slate-200">Students</h3>
+                            @can('manage-classes')
+                                <button @click="$dispatch('open-modal', 'assign-student')"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-xs font-semibold rounded-lg hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
+                                    <i class="fa-solid fa-plus"></i>
+                                    Assign Student
+                                </button>
+                            @endcan
+                        </div>
                         @if($class->students->count())
                             <div class="space-y-2">
                                 @foreach($class->students as $student)
                                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
-                                        <div class="flex items-center gap-3">
-                                            <img src="{{ $student->user?->profile_photo_url ?? '' }}" alt="" class="w-8 h-8 rounded-full">
-                                            <span class="text-sm font-semibold text-gray-900 dark:text-slate-200">{{ $student->user?->name ?? 'Unknown' }}</span>
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <img src="{{ $student->user?->profile_photo_url ?? '' }}" alt="" class="w-8 h-8 rounded-full shrink-0">
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-slate-200 truncate">{{ $student->user?->name ?? 'Unknown' }}</span>
                                         </div>
-                                        <span class="text-xs text-gray-400 dark:text-slate-500">{{ $student->admission_number ?? 'N/A' }}</span>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            <span class="text-xs text-gray-400 dark:text-slate-500">{{ $student->admission_number ?? 'N/A' }}</span>
+                                            @can('manage-classes')
+                                                <button @click="$dispatch('set-confirmation', {
+                                                    action: '{{ route('classes.students.remove', [$class, $student]) }}',
+                                                    method: 'DELETE',
+                                                    title: 'Remove Student',
+                                                    message: 'Remove {{ $student->user?->name }} from {{ $class->name }}?',
+                                                    confirmLabel: 'Remove',
+                                                    confirmClass: 'bg-red-600 hover:bg-red-700'
+                                                })" class="p-1 text-gray-400 hover:text-red-500 transition" title="Remove">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            @endcan
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -91,4 +114,43 @@
             </div>
         </div>
     </div>
+
+    <x-modal name="assign-student" maxWidth="lg" focusable>
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Assign Student to {{ $class->name }}</h2>
+                <button @click="$dispatch('close-modal', 'assign-student')" type="button" class="text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-400 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form action="{{ route('classes.students.assign', $class) }}" method="POST">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label for="student_id" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Select Student</label>
+                        <select name="student_id" id="student_id" required
+                            class="block w-full rounded-xl border-gray-200 dark:border-slate-600 dark:text-slate-200 dark:bg-slate-700 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 bg-white">
+                            <option value="">Choose a student...</option>
+                            @foreach($availableStudents as $student)
+                                <option value="{{ $student->id }}">
+                                    {{ $student->user?->name ?? 'Unknown' }} — {{ $student->admission_number ?? 'N/A' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('student_id')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-4 mt-8">
+                    <button @click="$dispatch('close-modal', 'assign-student')" type="button"
+                        class="inline-flex items-center px-6 py-2.5 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
+                        Assign Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
 </x-app-layout>

@@ -16,7 +16,7 @@ A Laravel 13 application for managing schools with strict Role-Based Access Cont
 - **Role-based dashboards** — each role sees relevant stats and quick actions
 - **User management** — admins create/manage all accounts (no self-registration)
 - **Student management** — profiles, class assignments, parent linking
-- **Class & subject management** — assign teachers, set capacity
+- **Class & subject management** — assign teachers, set capacity, individual & bulk student assignment
 - **Attendance** — daily records per class with per-student status (present/absent/late/excused)
 - **Assignments & submissions** — teachers create, students submit, teachers grade with feedback
 - **Exams & results** — exam scheduling, score entry with grade calculation
@@ -85,7 +85,7 @@ composer test
 | `database/migrations/` | Schema migrations including `activity_logs`, `conversation_user` pivot |
 | `database/seeders/` | `RolesAndPermissionsSeeder` with granular permissions |
 | `resources/views/` | Role-appropriate Blade views with collapsible sidebar layout |
-| `routes/web.php` | All application routes organized by feature |
+| `routes/web.php` | All application routes organized by feature including admin class assignments |
 | `routes/auth.php` | Authentication routes (registration removed) |
 
 ## Tech Stack

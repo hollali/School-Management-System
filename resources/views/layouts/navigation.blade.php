@@ -175,6 +175,11 @@ $isParent = $user->hasRole('Parent');
                         <i class="fa-solid fa-users-gear w-5 text-center shrink-0 text-[15px]"></i>
                         <span x-show="!collapsed" class="truncate">{{ __('User Management') }}</span>
                     </x-nav-link>
+
+                    <x-nav-link :href="route('admin.class-assignments')" :active="request()->routeIs('admin.class-assignments*')" label="Class Assignments">
+                        <i class="fa-solid fa-people-arrows w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Class Assignments') }}</span>
+                    </x-nav-link>
                 @endif
             </div>
 
