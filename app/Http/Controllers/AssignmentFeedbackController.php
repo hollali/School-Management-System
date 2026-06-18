@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AssignmentGraded;
 use App\Models\AssignmentFeedback;
 use App\Models\Submission;
 use App\Models\Teacher;
@@ -38,7 +39,9 @@ class AssignmentFeedbackController extends Controller
             'score'         => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
-        AssignmentFeedback::create($data);
+        $feedback = AssignmentFeedback::create($data);
+
+        event(new AssignmentGraded($feedback));
 
         return redirect()->route('assignment-feedback.index')
             ->with('success', 'Feedback created successfully.');

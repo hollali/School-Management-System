@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SubmissionSubmitted;
 use App\Models\Assignment;
 use App\Models\Student;
 use App\Models\Submission;
@@ -44,7 +45,9 @@ class SubmissionController extends Controller
         $data['submitted_at'] = now();
         $data['status'] = 'submitted';
 
-        Submission::create($data);
+        $submission = Submission::create($data);
+
+        event(new SubmissionSubmitted($submission));
 
         return redirect()->route('submissions.index')
             ->with('success', 'Submission created successfully.');

@@ -159,10 +159,21 @@ $isParent = $user->hasRole('Parent');
                     <span x-show="!collapsed" class="truncate">{{ __('Messages') }}</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')" label="Notifications">
-                    <i class="fa-solid fa-bell w-5 text-center shrink-0 text-[15px]"></i>
-                    <span x-show="!collapsed" class="truncate">{{ __('Notifications') }}</span>
+                <x-nav-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')" label="Announcements">
+                    <i class="fa-solid fa-bullhorn w-5 text-center shrink-0 text-[15px]"></i>
+                    <span x-show="!collapsed" class="truncate">{{ __('Announcements') }}</span>
                 </x-nav-link>
+
+                <div class="relative">
+                    <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')" label="Notifications">
+                        <i class="fa-solid fa-bell w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Notifications') }}</span>
+                    </x-nav-link>
+                    @php $sidebarUnread = \App\Models\AppNotification::forUser(auth()->user())->unread()->count(); @endphp
+                    @if($sidebarUnread > 0)
+                        <span class="absolute top-0.5 left-4 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full">{{ $sidebarUnread > 9 ? '9+' : $sidebarUnread }}</span>
+                    @endif
+                </div>
 
                 {{-- Administration --}}
                 @if($isAdmin)

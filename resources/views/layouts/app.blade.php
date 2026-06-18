@@ -48,9 +48,9 @@
                     <div class="flex items-center gap-2">
                         <a href="{{ route('notifications.index') }}" class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10 rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
                             <i class="fa-regular fa-bell text-xl"></i>
-                            @php $unreadCount = auth()->user()->unreadNotifications->count(); @endphp
-                            @if($unreadCount > 0)
-                                <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+                            @php $headerUnread = \App\Models\AppNotification::forUser(auth()->user())->unread()->count(); @endphp
+                            @if($headerUnread > 0)
+                                <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">{{ $headerUnread > 9 ? '9+' : $headerUnread }}</span>
                             @endif
                         </a>
 

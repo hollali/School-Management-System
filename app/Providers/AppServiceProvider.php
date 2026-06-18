@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Announcement;
 use App\Models\Assignment;
 use App\Models\Attendance;
 use App\Models\Exam;
 use App\Models\Result;
 use App\Models\Student;
+use App\Policies\AnnouncementPolicy;
 use App\Policies\AssignmentPolicy;
 use App\Policies\AttendancePolicy;
 use App\Policies\ExamPolicy;
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Gate::policy(Announcement::class, AnnouncementPolicy::class);
         Gate::policy(Assignment::class, AssignmentPolicy::class);
         Gate::policy(Exam::class, ExamPolicy::class);
         Gate::policy(Attendance::class, AttendancePolicy::class);

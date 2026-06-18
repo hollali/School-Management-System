@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Helpers\ActivityLogger;
 use App\Models\Conversation;
 use App\Models\Message;
@@ -52,11 +53,13 @@ class ConversationController extends Controller
 
         $conversation->participants()->attach(Auth::id());
 
-        Message::create([
+        $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => Auth::id(),
             'body' => $data['message'],
         ]);
+
+        event(new MessageSent($message));
 
         ActivityLogger::log('conversation-created', 'Conversation', $conversation->id, "Created conversation: {$conversation->subject}");
 
@@ -93,11 +96,13 @@ class ConversationController extends Controller
             'message' => ['required', 'string'],
         ]);
 
-        Message::create([
+        $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => Auth::id(),
             'body' => $data['message'],
         ]);
+
+        event(new MessageSent($message));
 
         $conversation->participants()->syncWithoutDetaching(Auth::id());
 

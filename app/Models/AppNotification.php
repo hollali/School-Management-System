@@ -28,4 +28,25 @@ class AppNotification extends Model
     {
         return $this->morphTo();
     }
+
+    public function scopeUnread($query)
+    {
+        return $query->whereNull('read_at');
+    }
+
+    public function scopeByType($query, string $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    public function scopeForUser($query, $user)
+    {
+        return $query->where('notifiable_type', get_class($user))
+            ->where('notifiable_id', $user->id);
+    }
+
+    public function isUnread(): bool
+    {
+        return is_null($this->read_at);
+    }
 }

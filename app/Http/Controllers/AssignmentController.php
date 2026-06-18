@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AssignmentCreated;
+use App\Events\AssignmentDeadlineUpdated;
 use App\Helpers\ActivityLogger;
 use App\Models\Assignment;
 use App\Models\SchoolClass;
@@ -60,6 +62,8 @@ class AssignmentController extends Controller
 
         $assignment = Assignment::create($data);
 
+        event(new AssignmentCreated($assignment));
+
         ActivityLogger::log('assignment-created', 'Assignment', $assignment->id, "Created assignment: {$assignment->title}");
 
         return redirect()->route('assignments.index')
@@ -93,7 +97,15 @@ class AssignmentController extends Controller
             'due_date'   => ['nullable', 'date'],
         ]);
 
+        $oldDueDate = $assignment->due_date?->format('Y-m-d');
+        $newDueDate = $data['due_date'] ?? null;
+        $dueDateChanged = $oldDueDate !== $newDueDate;
+
         $assignment->update($data);
+
+        if ($dueDateChanged) {
+            event(new AssignmentDeadlineUpdated($assignment));
+        }
 
         ActivityLogger::log('assignment-updated', 'Assignment', $assignment->id, "Updated assignment: {$assignment->title}");
 
