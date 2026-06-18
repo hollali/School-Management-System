@@ -18,6 +18,13 @@ class Assignment extends Model
         'due_date',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'due_date' => 'datetime',
+        ];
+    }
+
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);

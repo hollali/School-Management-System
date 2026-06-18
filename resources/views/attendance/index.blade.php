@@ -63,7 +63,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-slate-300">{{ $attendance->creator->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-1">
                         <button @click="
-                            $dispatch('view-attendance', @json([
+                            $dispatch('view-attendance', @js([
                                 'class_name' => $attendance->schoolClass->name,
                                 'attendance_date' => $attendance->attendance_date->format('l, F d, Y'),
                                 'creator_name' => $attendance->creator->name,
@@ -75,7 +75,7 @@
                         </button>
                         @if(Auth::user()->hasRole('Teacher'))
                         <button @click="
-                            $dispatch('edit-attendance', @json([
+                            $dispatch('edit-attendance', @js([
                                 'id' => $attendance->id,
                                 'class_id' => $attendance->class_id,
                                 'attendance_date' => $attendance->attendance_date->format('Y-m-d'),

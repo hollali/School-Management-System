@@ -31,4 +31,10 @@ class SchoolClass extends Model
             ->withPivot(['assigned_at', 'status'])
             ->withTimestamps();
     }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'class_subject', 'class_id', 'subject_id')
+            ->withTimestamps();
+    }
 }

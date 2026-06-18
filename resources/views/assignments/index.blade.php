@@ -92,6 +92,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-1">
                             <button @click="
                                 $dispatch('view-assignment', @js([
+                                    'id' => $assignment->id,
                                     'title' => $assignment->title,
                                     'class' => $assignment->schoolClass?->name ?? '—',
                                     'subject' => $assignment->subject?->name ?? '—',
@@ -325,7 +326,7 @@
     }
     function viewAssignmentData() {
         return {
-            data: { title: '', class: '', subject: '', teacher: '', due_date: '', description: '' },
+            data: { id: '', title: '', class: '', subject: '', teacher: '', due_date: '', description: '' },
             load(data) {
                 this.data = { ...data };
             }
