@@ -15,7 +15,13 @@ class Submission extends Model
         'submitted_at',
         'content',
         'attachment_path',
+        'file_hash',
         'status',
+        'rejection_reason',
+    ];
+
+    protected $casts = [
+        'submitted_at' => 'datetime',
     ];
 
     public function assignment()

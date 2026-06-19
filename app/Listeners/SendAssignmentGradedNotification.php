@@ -25,13 +25,15 @@ class SendAssignmentGradedNotification
                 'title' => 'Assignment Graded: ' . ($assignment->title ?? ''),
                 'body' => 'Your submission for "' . ($assignment->title ?? '') . '" has been graded. '
                     . ($feedback->score !== null ? 'Score: ' . $feedback->score . '/100' : '')
-                    . ($feedback->comments ? '. Feedback: ' . substr($feedback->comments, 0, 150) : ''),
+                    . ($feedback->comments ? '. Feedback: ' . substr($feedback->comments, 0, 150) : '')
+                    . '. Assessed on ' . ($feedback->created_at?->format('M d, Y \a\t H:i') ?? now()->format('M d, Y \a\t H:i')),
                 'action_url' => route('assignment-feedback.show', $feedback),
                 'type' => 'grade',
                 'score' => $feedback->score,
                 'assignment_id' => $assignment?->id,
                 'submission_id' => $submission?->id,
                 'feedback_id' => $feedback->id,
+                'assessed_at' => ($feedback->created_at ?? now())->toISOString(),
             ],
             'read_at' => null,
         ]);
