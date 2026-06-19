@@ -185,22 +185,7 @@ class AnnouncementController extends Controller
 
         $announcement->update($data);
 
-        AppNotification::where('type', 'announcement')
-            ->where('data->announcement_id', $announcement->id)
-            ->chunk(100, function ($notifications) use ($announcement) {
-                foreach ($notifications as $notification) {
-                    $notifData = $notification->data;
-                    $wasRead = !is_null($notification->read_at);
-                    $notifData['title'] = '✎ Updated: ' . $announcement->title;
-                    $notifData['body'] = substr($announcement->body, 0, 300);
-                    $notifData['updated'] = true;
-                    $notifData['updated_at'] = now()->toISOString();
-                    $notification->update([
-                        'data' => $notifData,
-                        'read_at' => $wasRead ? $notification->read_at : null,
-                    ]);
-                }
-            });
+        event(new \App\Events\AnnouncementUpdated($announcement));
 
         ActivityLogger::log('announcement-updated', 'Announcement', $announcement->id, "Updated announcement: {$announcement->title}");
 

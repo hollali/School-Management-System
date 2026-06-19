@@ -21,7 +21,7 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             {{-- Filter Tabs --}}
             <div class="mb-4 flex flex-wrap items-center gap-2">
                 <a href="{{ route('notifications.index') }}"

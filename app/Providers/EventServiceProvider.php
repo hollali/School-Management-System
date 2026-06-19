@@ -3,17 +3,23 @@
 namespace App\Providers;
 
 use App\Events\AnnouncementPublished;
+use App\Events\AnnouncementUpdated;
 use App\Events\AssignmentCreated;
 use App\Events\AssignmentDeadlineUpdated;
 use App\Events\AssignmentGraded;
 use App\Events\MessageSent;
 use App\Events\SubmissionSubmitted;
+use App\Events\SubmissionRetracted;
+use App\Events\SubmissionRejected;
 use App\Listeners\SendAnnouncementNotification;
+use App\Listeners\SyncAnnouncementNotifications;
 use App\Listeners\SendAssignmentCreatedNotification;
 use App\Listeners\SendAssignmentDeadlineUpdatedNotification;
 use App\Listeners\SendAssignmentGradedNotification;
 use App\Listeners\SendMessageNotification;
 use App\Listeners\SendSubmissionReceivedNotification;
+use App\Listeners\SendSubmissionRetractedNotification;
+use App\Listeners\SendSubmissionRejectedNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -36,6 +42,15 @@ class EventServiceProvider extends ServiceProvider
         ],
         AnnouncementPublished::class => [
             SendAnnouncementNotification::class,
+        ],
+        AnnouncementUpdated::class => [
+            SyncAnnouncementNotifications::class,
+        ],
+        SubmissionRetracted::class => [
+            SendSubmissionRetractedNotification::class,
+        ],
+        SubmissionRejected::class => [
+            SendSubmissionRejectedNotification::class,
         ],
     ];
 

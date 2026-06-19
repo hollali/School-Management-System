@@ -28,7 +28,7 @@ class SendMessageNotification
                 'data' => [
                     'title' => 'New Message: ' . ($conversation->subject ?? 'Conversation'),
                     'body' => $sender->name . ': ' . substr($message->body, 0, 200),
-                    'action_url' => route('conversations.show', $conversation),
+                    'action_url' => route('conversations.index', ['conversation' => $conversation->id]),
                     'type' => 'message',
                     'conversation_id' => $conversation->id,
                     'sender_name' => $sender->name,

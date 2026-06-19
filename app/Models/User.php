@@ -36,6 +36,28 @@ class User extends Authenticatable
         return $this->hasOne(Teacher::class);
     }
 
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_user')
+            ->withPivot(['role', 'last_read_at', 'is_archived', 'is_pinned', 'notifications_enabled', 'joined_at'])
+            ->withTimestamps();
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function messageReactions()
+    {
+        return $this->hasMany(MessageReaction::class);
+    }
+
+    public function messageReads()
+    {
+        return $this->hasMany(MessageRead::class);
+    }
+
     public function getRoleAttribute(): string
     {
         return $this->roles->first()?->name ?? 'Student';
@@ -67,6 +89,67 @@ class User extends Authenticatable
             return asset('storage/' . $this->profile_photo_path);
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=0284c7&background=e0f2fe';
+    }
+
+    public function canMessage(User $otherUser): bool
+    {
+        if ($this->id === $otherUser->id) return false;
+
+        if ($this->isAdmin()) {
+            return $otherUser->isTeacher() || $otherUser->isAdmin();
+        }
+
+        if ($this->isTeacher()) {
+            return $otherUser->isTeacher() || $otherUser->isAdmin();
+        }
+
+        if ($this->isStudent()) {
+            return $otherUser->isStudent();
+        }
+
+        return false;
+    }
+
+    public function canCreateGroupConversation(): bool
+    {
+        return true;
+    }
+
+    public function canHaveParticipant(User $participant): bool
+    {
+        return $this->canMessage($participant) || $this->id === $participant->id;
+    }
+
+    public function getMessagableUserIds(): array
+    {
+        if ($this->isAdmin()) {
+            return User::where('id', '!=', $this->id)
+                ->where(function ($q) {
+                    $q->whereHas('roles', fn($q) => $q->where('name', 'Teacher'))
+                      ->orWhereHas('roles', fn($q) => $q->where('name', 'Admin'));
+                })
+                ->pluck('id')
+                ->toArray();
+        }
+
+        if ($this->isTeacher()) {
+            return User::where('id', '!=', $this->id)
+                ->where(function ($q) {
+                    $q->whereHas('roles', fn($q) => $q->where('name', 'Teacher'))
+                      ->orWhereHas('roles', fn($q) => $q->where('name', 'Admin'));
+                })
+                ->pluck('id')
+                ->toArray();
+        }
+
+        if ($this->isStudent()) {
+            return User::where('id', '!=', $this->id)
+                ->whereHas('roles', fn($q) => $q->where('name', 'Student'))
+                ->pluck('id')
+                ->toArray();
+        }
+
+        return [];
     }
 
     protected function casts(): array

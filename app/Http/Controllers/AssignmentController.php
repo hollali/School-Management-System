@@ -8,6 +8,7 @@ use App\Helpers\ActivityLogger;
 use App\Models\Assignment;
 use App\Models\SchoolClass;
 use App\Models\Subject;
+use App\Models\Submission;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +76,16 @@ class AssignmentController extends Controller
         $this->authorize('view', $assignment);
         $assignment->load(['submissions.student.user', 'teacher.user', 'schoolClass', 'subject']);
 
-        return view('assignments.show', compact('assignment'));
+        $submission = null;
+        $user = Auth::user();
+        if ($user->hasRole('Student') && $user->student) {
+            $submission = Submission::where('assignment_id', $assignment->id)
+                ->where('student_id', $user->student->id)
+                ->with('feedback')
+                ->first();
+        }
+
+        return view('assignments.show', compact('assignment', 'submission'));
     }
 
     public function edit(Assignment $assignment)

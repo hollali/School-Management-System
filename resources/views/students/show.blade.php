@@ -84,7 +84,7 @@
                 @if ($student->classes->count() > 0)
                     <div class="mt-8">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-slate-200 mb-4">{{ __('Assigned Classes') }}</h3>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-100 dark:divide-slate-700">
                                 <thead class="bg-gray-50 dark:bg-slate-700/50">
                                     <tr>

@@ -90,6 +90,69 @@
         </div>
     </div>
 
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700 p-6 mb-6">
+        <h3 class="text-base font-bold text-gray-900 dark:text-slate-200 mb-4">My Submissions & Grades</h3>
+        @if($recentSubmissions->count())
+            <div class="space-y-2">
+                @foreach($recentSubmissions as $submission)
+                    <a href="{{ route('submissions.show', $submission) }}" class="block">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg dark:bg-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg
+                                    @php
+                                        $dashIconBg = 'bg-emerald-100 dark:bg-emerald-900/30';
+                                        $dashIcon = 'fa-clock text-emerald-600 dark:text-emerald-400';
+                                        if ($submission->feedback) { $dashIconBg = 'bg-blue-100 dark:bg-blue-900/30'; $dashIcon = 'fa-check-circle text-blue-600 dark:text-blue-400'; }
+                                        if ($submission->status === 'rejected') { $dashIconBg = 'bg-red-100 dark:bg-red-900/30'; $dashIcon = 'fa-xmark text-red-600 dark:text-red-400'; }
+                                        if ($submission->status === 'retracted') { $dashIconBg = 'bg-gray-100 dark:bg-slate-600'; $dashIcon = 'fa-rotate-left text-gray-600 dark:text-gray-300'; }
+                                    @endphp
+                                    {{ $dashIconBg }} flex items-center justify-center relative">
+                                    <i class="fa-solid {{ $dashIcon }} text-xs"></i>
+                                    @if($submission->attachment_path)
+                                        <i class="fa-solid fa-paperclip text-[8px] text-gray-400 absolute -top-1 -right-1"></i>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-slate-200">{{ $submission->assignment->title }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-slate-500">
+                                        @if($submission->status === 'retracted')
+                                            Withdrawn
+                                        @elseif($submission->status === 'rejected')
+                                            Rejected — {{ Str::limit($submission->rejection_reason, 60) }}
+                                        @else
+                                            Submitted {{ $submission->submitted_at?->diffForHumans() ?? '—' }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                @if($submission->feedback)
+                                    <span class="text-sm font-bold
+                                        @if($submission->feedback->score >= 80) text-green-600 dark:text-green-400
+                                        @elseif($submission->feedback->score >= 60) text-amber-600 dark:text-amber-400
+                                        @else text-red-600 dark:text-red-400
+                                        @endif">
+                                        {{ $submission->feedback->score }}
+                                    </span>
+                                    <span class="text-xs text-gray-400 dark:text-slate-500">/100</span>
+                                @else
+                                    <span class="text-xs px-2.5 py-1 rounded-full font-medium @if($submission->status === 'rejected') bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 @elseif($submission->status === 'retracted') bg-gray-100 text-gray-600 dark:bg-slate-600 dark:text-slate-300 @else bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400 @endif">
+                                        {{ ucfirst($submission->status === 'rejected' || $submission->status === 'retracted' ? $submission->status : 'Pending') }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+            <div class="mt-4 text-center">
+                <a href="{{ route('submissions.index') }}" class="text-sm text-sky-600 dark:text-sky-400 hover:underline">View all submissions</a>
+            </div>
+        @else
+            <p class="text-sm text-gray-400 dark:text-slate-500 text-center py-4">No submissions yet.</p>
+        @endif
+    </div>
+
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700 p-6">
         <h3 class="text-base font-bold text-gray-900 dark:text-slate-200 mb-4">Upcoming Assignments</h3>
         @if($recentAssignments->count())

@@ -104,6 +104,12 @@
                             " class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition" title="View">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
+                            @if(Auth::user()->hasRole('Student'))
+                                <a href="{{ route('assignments.show', $assignment) }}"
+                                    class="inline-flex items-center justify-center w-8 h-8 text-emerald-600 hover:text-white hover:bg-emerald-600 rounded-lg transition" title="Submit">
+                                    <i class="fa-solid fa-upload"></i>
+                                </a>
+                            @endif
                             @if(Auth::user()->hasRole('Teacher'))
                                 <button @click="
                                     $dispatch('edit-assignment', @js([
@@ -306,11 +312,17 @@
                 <p class="text-sm text-gray-500 dark:text-slate-400">Description</p>
                 <p class="mt-1 text-sm text-gray-900 dark:text-slate-200 whitespace-pre-wrap" x-text="data.description"></p>
             </div>
-            <div class="mt-6 flex justify-end">
+            <div class="mt-6 flex justify-end gap-2">
                 <a :href="`/assignments/${data.id}`" target="_blank"
                     class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
                     Full Details
                 </a>
+                @if(Auth::user()->hasRole('Student'))
+                    <a :href="`/assignments/${data.id}`"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm font-semibold rounded-xl hover:from-emerald-700 hover:to-teal-700 transition shadow-sm">
+                        <i class="fa-solid fa-upload"></i> Submit Assignment
+                    </a>
+                @endif
             </div>
         </div>
     </x-modal>

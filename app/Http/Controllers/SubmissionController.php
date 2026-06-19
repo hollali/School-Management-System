@@ -2,23 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SubmissionRejected;
+use App\Events\SubmissionRetracted;
 use App\Events\SubmissionSubmitted;
 use App\Models\Assignment;
 use App\Models\Student;
 use App\Models\Submission;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class SubmissionController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()
     {
-        $submissions = Submission::with(['assignment', 'student.user'])
-            ->latest()
-            ->paginate(15);
+        $this->authorize('viewAny', Submission::class);
 
-        $assignments = Assignment::latest()->get();
-        $students = Student::with('user')->latest()->get();
+        $user = Auth::user();
+        $query = Submission::with(['assignment', 'student.user', 'feedback']);
+
+        if ($user->hasRole('Teacher')) {
+            $query->whereHas('assignment', function ($q) use ($user) {
+                $q->where('teacher_id', $user->teacher?->id);
+            });
+        } elseif ($user->hasRole('Student')) {
+            $query->where('student_id', $user->student?->id);
+        }
+
+        if ($assignmentId = request('assignment_id')) {
+            $query->where('assignment_id', $assignmentId);
+        }
+
+        if ($status = request('status')) {
+            $query->where('status', $status);
+        }
+
+        $submissions = $query->latest()->paginate(15);
+
+        $assignments = Assignment::when($user->hasRole('Teacher'), function ($q) use ($user) {
+            $q->where('teacher_id', $user->teacher?->id);
+        })->latest()->get();
+
+        $students = collect();
+        if ($user->hasRole('Admin')) {
+            $students = Student::with('user')->latest()->get();
+        }
 
         return view('submissions.index', compact('submissions', 'assignments', 'students'));
     }
@@ -30,22 +62,59 @@ class SubmissionController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Submission::class);
+
+        $user = Auth::user();
+
         $data = $request->validate([
             'assignment_id' => ['required', 'exists:assignments,id'],
-            'student_id'    => ['required', 'exists:students,id'],
             'content'       => ['nullable', 'string'],
-            'attachment'    => ['nullable', 'file', 'max:10240'],
+            'attachment'    => ['nullable', 'file', 'max:51200', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,bmp,svg,zip,mp4,avi,mov,wmv,webm,mkv,flv'],
         ]);
 
-        if ($request->hasFile('attachment')) {
-            $data['attachment_path'] = $request->file('attachment')
-                ->store('submissions', 'public');
+        $assignment = Assignment::findOrFail($data['assignment_id']);
+        $student = $user->student;
+
+        if (!$student) {
+            return back()->withErrors(['student' => 'Only students can submit assignments.'])->withInput();
         }
 
+        $inClass = $student->classes()->where('classes.id', $assignment->class_id)->exists();
+        if (!$inClass) {
+            return back()->withErrors(['assignment_id' => 'You can only submit to assignments for your class.'])->withInput();
+        }
+
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $fileHash = md5_file($file->getRealPath());
+
+            $duplicate = Submission::where('assignment_id', $data['assignment_id'])
+                ->where('file_hash', $fileHash)
+                ->exists();
+
+            if ($duplicate) {
+                return back()->withErrors(['attachment' => 'This file has already been submitted for this assignment.'])->withInput();
+            }
+
+            $data['file_hash'] = $fileHash;
+            $data['attachment_path'] = $file->store('submissions', 'public');
+        }
+
+        unset($data['attachment']);
+        $data['student_id'] = $student->id;
         $data['submitted_at'] = now();
         $data['status'] = 'submitted';
 
-        $submission = Submission::create($data);
+        $existing = Submission::where('assignment_id', $data['assignment_id'])
+            ->where('student_id', $student->id)
+            ->first();
+
+        if ($existing) {
+            $existing->update($data);
+            $submission = $existing;
+        } else {
+            $submission = Submission::create($data);
+        }
 
         event(new SubmissionSubmitted($submission));
 
@@ -55,6 +124,8 @@ class SubmissionController extends Controller
 
     public function show(Submission $submission)
     {
+        $this->authorize('view', $submission);
+
         $submission->load(['assignment', 'student.user', 'feedback.teacher.user']);
 
         return view('submissions.show', compact('submission'));
@@ -67,21 +138,38 @@ class SubmissionController extends Controller
 
     public function update(Request $request, Submission $submission)
     {
+        $this->authorize('update', $submission);
+
         $data = $request->validate([
-            'assignment_id' => ['required', 'exists:assignments,id'],
-            'student_id'    => ['required', 'exists:students,id'],
             'content'       => ['nullable', 'string'],
-            'attachment'    => ['nullable', 'file', 'max:10240'],
+            'attachment'    => ['nullable', 'file', 'max:51200', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,bmp,svg,zip,mp4,avi,mov,wmv,webm,mkv,flv'],
         ]);
 
         if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $fileHash = md5_file($file->getRealPath());
+
+            $duplicate = Submission::where('assignment_id', $submission->assignment_id)
+                ->where('file_hash', $fileHash)
+                ->where('id', '!=', $submission->id)
+                ->exists();
+
+            if ($duplicate) {
+                return back()->withErrors(['attachment' => 'This file has already been submitted for this assignment.'])->withInput();
+            }
+
             if ($submission->attachment_path) {
                 Storage::disk('public')->delete($submission->attachment_path);
             }
 
-            $data['attachment_path'] = $request->file('attachment')
-                ->store('submissions', 'public');
+            $data['file_hash'] = $fileHash;
+            $data['attachment_path'] = $file->store('submissions', 'public');
+            $data['submitted_at'] = now();
+            $data['status'] = 'submitted';
+            $data['rejection_reason'] = null;
         }
+
+        unset($data['attachment']);
 
         $submission->update($data);
 
@@ -91,6 +179,8 @@ class SubmissionController extends Controller
 
     public function destroy(Submission $submission)
     {
+        $this->authorize('delete', $submission);
+
         if ($submission->attachment_path) {
             Storage::disk('public')->delete($submission->attachment_path);
         }
@@ -99,5 +189,47 @@ class SubmissionController extends Controller
 
         return redirect()->route('submissions.index')
             ->with('success', 'Submission deleted successfully.');
+    }
+
+    public function retract(Submission $submission)
+    {
+        $this->authorize('retract', $submission);
+
+        $submission->update([
+            'status' => 'retracted',
+            'submitted_at' => null,
+        ]);
+
+        if ($submission->attachment_path) {
+            Storage::disk('public')->delete($submission->attachment_path);
+            $submission->update([
+                'attachment_path' => null,
+                'file_hash' => null,
+            ]);
+        }
+
+        event(new SubmissionRetracted($submission));
+
+        return redirect()->back()
+            ->with('success', 'Submission withdrawn successfully.');
+    }
+
+    public function reject(Request $request, Submission $submission)
+    {
+        $this->authorize('reject', $submission);
+
+        $data = $request->validate([
+            'rejection_reason' => ['required', 'string', 'min:10'],
+        ]);
+
+        $submission->update([
+            'status' => 'rejected',
+            'rejection_reason' => $data['rejection_reason'],
+        ]);
+
+        event(new SubmissionRejected($submission, $data['rejection_reason']));
+
+        return redirect()->back()
+            ->with('success', 'Submission rejected successfully.');
     }
 }

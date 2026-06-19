@@ -10,13 +10,15 @@
 
     <div class="py-6">
         <x-data-table title="Assignment Feedback" :data="$feedbacks" searchable="true" searchPlaceholder="Search feedback..." searchValue="{{ request('search') }}" searchRoute="{{ route('assignment-feedback.index') }}">
-            <x-slot name="actions">
-                <button @click="$dispatch('open-modal', 'create-feedback')"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
-                    <i class="fa-solid fa-plus"></i>
-                    New Feedback
-                </button>
-            </x-slot>
+            @can('create', App\Models\AssignmentFeedback::class)
+                <x-slot name="actions">
+                    <button @click="$dispatch('open-modal', 'create-feedback')"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-semibold rounded-xl hover:from-sky-700 hover:to-cyan-700 transition shadow-sm">
+                        <i class="fa-solid fa-plus"></i>
+                        New Feedback
+                    </button>
+                </x-slot>
+            @endcan
             <x-slot name="filters">
                 <select name="teacher_id" @change="const p=new URLSearchParams(location.search);p.set('teacher_id',$event.target.value);p.delete('page');window.location='{{ route('assignment-feedback.index') }}?'+p"
                     class="rounded-lg border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 text-sm py-2 pl-3 pr-8 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
@@ -131,18 +133,6 @@
                     </div>
 
                     <div>
-                        <label for="teacher_id" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Teacher</label>
-                        <select name="teacher_id" id="teacher_id"
-                            class="block w-full rounded-xl border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 dark:bg-slate-700 dark:text-slate-200">
-                            <option value="">Select Teacher</option>
-                            @foreach($teachers as $teacher)
-                                <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->user->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('teacher_id')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div>
                         <label for="score" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Score</label>
                         <input type="number" name="score" id="score" value="{{ old('score') }}" step="0.01" min="0" max="100"
                             class="block w-full rounded-xl border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 dark:bg-slate-700 dark:text-slate-200">
@@ -184,28 +174,6 @@
                 @method('PUT')
                 <div class="grid grid-cols-1 gap-6">
                     <div>
-                        <label for="edit_submission_id" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Submission</label>
-                        <select name="submission_id" id="edit_submission_id" x-model="form.submission_id"
-                            class="block w-full rounded-xl border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 dark:bg-slate-700 dark:text-slate-200">
-                            <option value="">Select Submission</option>
-                            @foreach($submissions as $submission)
-                                <option value="{{ $submission->id }}">
-                                    {{ $submission->student->user->name }} — {{ $submission->assignment->title }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label for="edit_teacher_id" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Teacher</label>
-                        <select name="teacher_id" id="edit_teacher_id" x-model="form.teacher_id"
-                            class="block w-full rounded-xl border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 dark:bg-slate-700 dark:text-slate-200">
-                            <option value="">Select Teacher</option>
-                            @foreach($teachers as $teacher)
-                                <option value="{{ $teacher->id }}">{{ $teacher->user->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
                         <label for="edit_score" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Score</label>
                         <input type="number" name="score" id="edit_score" step="0.01" min="0" max="100" x-model="form.score"
                             class="block w-full rounded-xl border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 dark:bg-slate-700 dark:text-slate-200">
@@ -240,7 +208,7 @@
                             <i class="fa-solid fa-xmark text-xl"></i>
                         </button>
                     </div>
-                    <dl class="grid grid-cols-2 gap-4 text-sm">
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
                             <dt class="text-gray-500 dark:text-slate-400 font-medium">Student</dt>
                             <dd class="text-gray-900 dark:text-slate-200 mt-1" x-text="feedback.student"></dd>

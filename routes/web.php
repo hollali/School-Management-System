@@ -11,6 +11,7 @@ use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\AssignmentFeedbackController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MessageReactionController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ResultController;
@@ -60,12 +61,24 @@ Route::middleware('auth')->group(function () {
     // Homework
     Route::resource('assignments', AssignmentController::class);
     Route::resource('submissions', SubmissionController::class);
+    Route::post('submissions/{submission}/retract', [SubmissionController::class, 'retract'])->name('submissions.retract');
+    Route::post('submissions/{submission}/reject', [SubmissionController::class, 'reject'])->name('submissions.reject');
     Route::resource('assignment-feedback', AssignmentFeedbackController::class);
 
     // Messaging
-    Route::resource('conversations', ConversationController::class);
-    Route::post('conversations/{conversation}/message', [ConversationController::class, 'message'])->name('conversations.message');
-    Route::resource('messages', MessageController::class);
+    Route::get('conversations/{conversation}/messages', [MessageController::class, 'index'])->name('conversations.messages');
+    Route::post('conversations/{conversation}/messages', [MessageController::class, 'store'])->name('conversations.messages.store');
+    Route::post('conversations/{conversation}/read', [ConversationController::class, 'markAsRead'])->name('conversations.read');
+    Route::post('conversations/{conversation}/archive', [ConversationController::class, 'toggleArchive'])->name('conversations.archive');
+    Route::post('conversations/{conversation}/pin', [ConversationController::class, 'togglePin'])->name('conversations.pin');
+    Route::get('conversations-list/json', [ConversationController::class, 'conversationListJson'])->name('conversations.list.json');
+    Route::get('users/search', [ConversationController::class, 'searchUsers'])->name('users.search');
+    Route::get('users/available', [ConversationController::class, 'getAvailableUsersJson'])->name('users.available');
+    Route::resource('conversations', ConversationController::class)->except(['show', 'edit', 'create', 'update']);
+    Route::post('messages/{message}/forward', [MessageController::class, 'forward'])->name('messages.forward');
+    Route::post('messages/{message}/reactions', [MessageReactionController::class, 'store'])->name('messages.reactions.store');
+    Route::delete('messages/{message}/reactions/{reaction}', [MessageReactionController::class, 'destroy'])->name('messages.reactions.destroy');
+    Route::resource('messages', MessageController::class)->only(['update', 'destroy']);
 
     // Fees
     Route::resource('fees', FeeController::class);

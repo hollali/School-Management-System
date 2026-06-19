@@ -9,6 +9,7 @@ use App\Models\Fee;
 use App\Models\ParentProfile;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Models\Submission;
 use App\Models\Teacher;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -79,8 +80,13 @@ class DashboardController extends Controller
         $classes = $student->classes;
         $recentAssignments = Assignment::whereIn('class_id', $classes->pluck('id'))->latest()->take(5)->get();
         $results = $student->results()->with('subject', 'exam')->latest()->take(5)->get();
+        $recentSubmissions = Submission::with(['assignment', 'feedback'])
+            ->where('student_id', $student->id)
+            ->latest()
+            ->take(5)
+            ->get();
 
-        return view('dashboards.student', compact('stats', 'classes', 'recentAssignments', 'results'));
+        return view('dashboards.student', compact('stats', 'classes', 'recentAssignments', 'results', 'recentSubmissions'));
     }
 
     protected function parentDashboard()
