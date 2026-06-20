@@ -39,38 +39,43 @@
                         <button onclick="window.print()" title="Print" class="inline-flex items-center justify-center w-8 h-8 text-gray-500 dark:text-slate-400 hover:text-white hover:bg-gray-500 rounded-lg transition">
                             <i class="fa-solid fa-print"></i>
                         </button>
+                        @php
+                            $_rcpt_method = $receipt->payment->method;
+                            $_rcpt_method_class = match($_rcpt_method) {
+                                'cash' => 'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-200',
+                                'mobile_money' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200',
+                                'card' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200',
+                                'bank_transfer' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-200',
+                                default => 'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-200',
+                            };
+                            $_rcpt_method_display = ucfirst(str_replace('_', ' ', $_rcpt_method ?? '—'));
+                        @endphp
                         <button @click="
-                            $dispatch('view-receipt', @json([
+                            $dispatch('view-receipt', {!! json_encode([
                                 'receipt_number' => $receipt->receipt_number ?? '—',
                                 'payment_ref' => $receipt->payment->reference ?? '—',
                                 'student_name' => $receipt->payment->fee->student->user->name ?? '—',
                                 'amount' => number_format($receipt->payment->amount, 2),
                                 'issued_at' => $receipt->issued_at ? $receipt->issued_at->format('Y-m-d H:i') : '—',
-                                'method' => $receipt->payment->method,
-                                'method_class' => match($receipt->payment->method) {
-                                    'cash' => 'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-200',
-                                    'mobile_money' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200',
-                                    'card' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200',
-                                    'bank_transfer' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-200',
-                                    default => 'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-200',
-                                },
-                                'method_display' => ucfirst(str_replace('_', ' ', $receipt->payment->method ?? '—')),
+                                'method' => $_rcpt_method,
+                                'method_class' => $_rcpt_method_class,
+                                'method_display' => $_rcpt_method_display,
                                 'reference' => $receipt->payment->reference,
                                 'notes' => $receipt->notes,
-                            ]));
+                            ]) !!});
                             $dispatch('open-modal', 'view-receipt');
                         " title="View" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                         @if(Auth::user()->hasRole('Admin'))
                         <button @click="
-                            $dispatch('edit-receipt', @json([
+                            $dispatch('edit-receipt', {!! json_encode([
                                 'id' => $receipt->id,
                                 'payment_id' => $receipt->payment_id,
                                 'receipt_number' => $receipt->receipt_number,
                                 'issued_at' => $receipt->issued_at ? $receipt->issued_at->format('Y-m-d\TH:i') : '',
                                 'notes' => $receipt->notes,
-                            ]));
+                            ]) !!});
                             $dispatch('open-modal', 'edit-receipt');
                         " title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
                             <i class="fa-solid fa-pen-to-square"></i>

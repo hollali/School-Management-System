@@ -78,38 +78,44 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-slate-300">{{ $payment->reference ?? '—' }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-1">
+                        @php
+                            $_pm = $payment->method;
+                            $_pm_class = match($_pm) {
+                                'cash' => 'bg-gray-100 text-gray-700',
+                                'mobile_money' => 'bg-green-100 text-green-700',
+                                'card' => 'bg-blue-100 text-blue-700',
+                                'bank_transfer' => 'bg-purple-100 text-purple-700',
+                                default => 'bg-gray-100 text-gray-700',
+                            };
+                            $_ps = $payment->status;
+                            $_ps_class = match($_ps) {
+                                'completed' => 'bg-emerald-100 text-emerald-700',
+                                'failed' => 'bg-red-100 text-red-700',
+                                'refunded' => 'bg-gray-100 text-gray-500',
+                                default => 'bg-amber-100 text-amber-700',
+                            };
+                        @endphp
                         <button @click="
-                            $dispatch('view-payment', @json([
+                            $dispatch('view-payment', {!! json_encode([
                                 'fee_invoice' => $payment->fee->invoice_number ?? '—',
                                 'student_name' => $payment->fee->student->user->name ?? '—',
                                 'amount' => number_format($payment->amount, 2),
                                 'paid_at' => $payment->paid_at ? $payment->paid_at->format('Y-m-d H:i') : '—',
-                                'method' => $payment->method,
-                                'method_class' => match($payment->method) {
-                                    'cash' => 'bg-gray-100 text-gray-700',
-                                    'mobile_money' => 'bg-green-100 text-green-700',
-                                    'card' => 'bg-blue-100 text-blue-700',
-                                    'bank_transfer' => 'bg-purple-100 text-purple-700',
-                                    default => 'bg-gray-100 text-gray-700',
-                                },
-                                'method_display' => ucfirst(str_replace('_', ' ', $payment->method ?? '—')),
+                                'method' => $_pm,
+                                'method_class' => $_pm_class,
+                                'method_display' => ucfirst(str_replace('_', ' ', $_pm ?? '—')),
                                 'reference' => $payment->reference,
-                                'status' => $payment->status,
-                                'status_class' => match($payment->status) {
-                                    'completed' => 'bg-emerald-100 text-emerald-700',
-                                    'failed' => 'bg-red-100 text-red-700',
-                                    'refunded' => 'bg-gray-100 text-gray-500',
-                                    default => 'bg-amber-100 text-amber-700',
-                                },
-                                'status_display' => ucfirst($payment->status),
-                            ]));
+                                'status' => $_ps,
+                                'status_class' => $_ps_class,
+                                'status_display' => ucfirst($_ps),
+                            ]) !!});
                             $dispatch('open-modal', 'view-payment');
                         " title="View" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                         @if(Auth::user()->hasRole('Admin'))
                         <button @click="
-                            $dispatch('edit-payment', @json([
+                            $dispatch('edit-payment', {!! json_encode([
                                 'id' => $payment->id,
                                 'fee_id' => $payment->fee_id,
                                 'amount' => $payment->amount,
@@ -117,7 +123,7 @@
                                 'method' => $payment->method,
                                 'reference' => $payment->reference,
                                 'status' => $payment->status,
-                            ]));
+                            ]) !!});
                             $dispatch('open-modal', 'edit-payment');
                         " title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
                             <i class="fa-solid fa-pen-to-square"></i>

@@ -92,7 +92,7 @@ $isParent = $user->hasRole('Parent');
                     </div>
 
                     @if($isTeacher)
-                        <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')" label="Attendance">
+                        <x-nav-link :href="route('attendance.dashboard')" :active="request()->routeIs('attendance.*')" label="Attendance">
                             <i class="fa-solid fa-check-to-slot w-5 text-center shrink-0 text-[15px]"></i>
                             <span x-show="!collapsed" class="truncate">{{ __('Attendance') }}</span>
                         </x-nav-link>
@@ -114,6 +114,11 @@ $isParent = $user->hasRole('Parent');
                     @endif
 
                     @if($isStudent)
+                        <x-nav-link :href="route('attendance.student.show')" :active="request()->routeIs('attendance.*')" label="Attendance">
+                            <i class="fa-solid fa-check-to-slot w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('Attendance') }}</span>
+                        </x-nav-link>
+
                         <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')" label="Homework">
                             <i class="fa-solid fa-file-pen w-5 text-center shrink-0 text-[15px]"></i>
                             <span x-show="!collapsed" class="truncate">{{ __('Homework') }}</span>
@@ -131,7 +136,7 @@ $isParent = $user->hasRole('Parent');
                             <span x-show="!collapsed" class="truncate">{{ __('Homework') }}</span>
                         </x-nav-link>
 
-                        <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')" label="Attendance">
+                        <x-nav-link :href="route('attendance.student.show')" :active="request()->routeIs('attendance.*')" label="Attendance">
                             <i class="fa-solid fa-check-to-slot w-5 text-center shrink-0 text-[15px]"></i>
                             <span x-show="!collapsed" class="truncate">{{ __('Attendance') }}</span>
                         </x-nav-link>
@@ -139,11 +144,6 @@ $isParent = $user->hasRole('Parent');
                         <x-nav-link :href="route('results.index')" :active="request()->routeIs('results.*')" label="Results">
                             <i class="fa-solid fa-chart-simple w-5 text-center shrink-0 text-[15px]"></i>
                             <span x-show="!collapsed" class="truncate">{{ __('Results') }}</span>
-                        </x-nav-link>
-
-                        <x-nav-link :href="route('fees.index')" :active="request()->routeIs('fees.*')" label="Fees">
-                            <i class="fa-solid fa-sack-dollar w-5 text-center shrink-0 text-[15px]"></i>
-                            <span x-show="!collapsed" class="truncate">{{ __('Fees') }}</span>
                         </x-nav-link>
                     @endif
                 @endif
@@ -196,6 +196,88 @@ $isParent = $user->hasRole('Parent');
                     <x-nav-link :href="route('admin.class-assignments')" :active="request()->routeIs('admin.class-assignments*')" label="Class Assignments">
                         <i class="fa-solid fa-people-arrows w-5 text-center shrink-0 text-[15px]"></i>
                         <span x-show="!collapsed" class="truncate">{{ __('Class Assignments') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('attendance.dashboard')" :active="request()->routeIs('attendance.*')" label="Attendance">
+                        <i class="fa-solid fa-check-to-slot w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Attendance') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('staff-attendance.index')" :active="request()->routeIs('staff-attendance.*')" label="Staff Attendance">
+                        <i class="fa-solid fa-clipboard-user w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Staff Attendance') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('holidays.index')" :active="request()->routeIs('holidays.*')" label="Holidays">
+                        <i class="fa-solid fa-calendar-xmark w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Holidays') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('finance.dashboard')" :active="request()->routeIs('finance.*')" label="Finance">
+                        <i class="fa-solid fa-sack-dollar w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Finance') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('fees.index')" :active="request()->routeIs('fees.*')" label="Invoices">
+                        <i class="fa-solid fa-file-invoice-dollar w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Invoices') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')" label="Payments">
+                        <i class="fa-solid fa-credit-card w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Payments') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('receipts.index')" :active="request()->routeIs('receipts.*')" label="Receipts">
+                        <i class="fa-solid fa-receipt w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Receipts') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('fee-structures.index')" :active="request()->routeIs('fee-structures.*')" label="Fee Structures">
+                        <i class="fa-solid fa-layer-group w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Fee Structures') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('fee-categories.index')" :active="request()->routeIs('fee-categories.*')" label="Fee Categories">
+                        <i class="fa-solid fa-tags w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Fee Categories') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('discounts.index')" :active="request()->routeIs('discounts.*')" label="Discounts">
+                        <i class="fa-solid fa-percent w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Discounts') }}</span>
+                    </x-nav-link>
+                @endif
+
+                {{-- Finance --}}
+                @if($isStudent || $isParent)
+                    <div x-show="!collapsed" class="pt-4 pb-1.5 px-3">
+                        <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">Finance</p>
+                    </div>
+
+                    @if($isStudent)
+                    <x-nav-link :href="route('finance.dashboard')" :active="request()->routeIs('finance.*')" label="Finance">
+                        <i class="fa-solid fa-sack-dollar w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Finance') }}</span>
+                    </x-nav-link>
+                    @endif
+
+                    <x-nav-link :href="route('fees.index')" :active="request()->routeIs('fees.*')" label="Invoices">
+                        <i class="fa-solid fa-file-invoice-dollar w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Invoices') }}</span>
+                    </x-nav-link>
+
+                    @if($isParent)
+                    <x-nav-link :href="route('payments.parent.history')" :active="request()->routeIs('payments.parent.*')" label="My Payments">
+                        <i class="fa-solid fa-credit-card w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('My Payments') }}</span>
+                    </x-nav-link>
+                    @endif
+
+                    <x-nav-link :href="route('receipts.index')" :active="request()->routeIs('receipts.*')" label="Receipts">
+                        <i class="fa-solid fa-receipt w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Receipts') }}</span>
                     </x-nav-link>
                 @endif
             </div>

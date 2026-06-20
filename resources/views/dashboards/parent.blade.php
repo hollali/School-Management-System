@@ -47,7 +47,7 @@
                             <a href="{{ route('students.show', $child) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-lg text-xs font-semibold hover:bg-sky-200 transition">
                                 <i class="fa-solid fa-eye"></i> View Profile
                             </a>
-                            <a href="{{ route('attendances.index') }}?student_id={{ $child->id }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-semibold hover:bg-emerald-200 transition">
+                            <a href="{{ route('attendance.index') }}?student_id={{ $child->id }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-semibold hover:bg-emerald-200 transition">
                                 <i class="fa-solid fa-check-to-slot"></i> Attendance
                             </a>
                             <a href="{{ route('results.index') }}?student_id={{ $child->id }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-semibold hover:bg-amber-200 transition">

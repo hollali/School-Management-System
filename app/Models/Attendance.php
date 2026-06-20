@@ -13,11 +13,19 @@ class Attendance extends Model
 
     protected $fillable = [
         'class_id',
+        'teacher_id',
+        'subject_id',
         'attendance_date',
         'created_by',
         'notes',
-        'teacher_id',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'attendance_date' => 'date',
+        ];
+    }
 
     public function schoolClass()
     {
@@ -34,8 +42,45 @@ class Attendance extends Model
         return $this->belongsTo(Teacher::class);
     }
 
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
     public function records()
     {
         return $this->hasMany(AttendanceRecord::class, 'attendance_id');
+    }
+
+    public function scopeForTeacher($query, $teacherId)
+    {
+        return $query->where('teacher_id', $teacherId);
+    }
+
+    public function scopeForClass($query, $classId)
+    {
+        return $query->where('class_id', $classId);
+    }
+
+    public function scopeForDate($query, $date)
+    {
+        return $query->where('attendance_date', $date);
+    }
+
+    public function scopeForDateRange($query, $start, $end)
+    {
+        return $query->whereBetween('attendance_date', [$start, $end]);
+    }
+
+    public function scopeForSubject($query, $subjectId)
+    {
+        return $query->where('subject_id', $subjectId);
+    }
+
+    public function scopeForStudent($query, $studentId)
+    {
+        return $query->whereHas('records', function ($q) use ($studentId) {
+            $q->where('student_id', $studentId);
+        });
     }
 }

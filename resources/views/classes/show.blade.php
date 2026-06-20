@@ -104,7 +104,7 @@
                             </a>
                         @endcan
                         @if(Auth::user()->hasRole('Teacher'))
-                            <a href="{{ route('attendances.index') }}" title="Take Attendance"
+                            <a href="{{ route('attendance.mark', ['class_id' => $class->id]) }}" title="Take Attendance"
                                 class="inline-flex items-center justify-center w-10 h-10 bg-sky-50 text-sky-700 rounded-xl hover:bg-sky-100 transition">
                                 <i class="fa-solid fa-check-to-slot"></i>
                             </a>

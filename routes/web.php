@@ -5,7 +5,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SchoolClassController;
 use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\AttendanceRecordController;
+use App\Http\Controllers\AttendanceDashboardController;
+use App\Http\Controllers\AttendanceReportController;
+use App\Http\Controllers\StaffAttendanceController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\AssignmentFeedbackController;
@@ -15,7 +17,13 @@ use App\Http\Controllers\MessageReactionController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\FeeCategoryController;
 use App\Http\Controllers\FeeController;
+use App\Http\Controllers\FeeStructureController;
+use App\Http\Controllers\FinanceDashboardController;
+use App\Http\Controllers\FinanceReportController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptController;
@@ -50,8 +58,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('classes/{class}/students/{student}', [SchoolClassController::class, 'removeStudent'])->name('classes.students.remove');
 
     // Attendance
-    Route::resource('attendances', AttendanceController::class);
-    Route::resource('attendance-records', AttendanceRecordController::class);
+    Route::get('attendance/mark', [AttendanceController::class, 'mark'])->name('attendance.mark');
+    Route::post('attendance/mark', [AttendanceController::class, 'storeMark'])->name('attendance.mark.store');
+    Route::get('attendance/student', [AttendanceController::class, 'studentShow'])->name('attendance.student.show');
+    Route::put('attendance/records/{record}', [AttendanceController::class, 'updateRecord'])->name('attendance.records.update');
+    Route::get('attendance/dashboard', [AttendanceDashboardController::class, 'index'])->name('attendance.dashboard');
+    Route::get('attendance/reports', [AttendanceReportController::class, 'index'])->name('attendance.reports');
+    Route::resource('attendance', AttendanceController::class)->except(['create', 'edit']);
+
+    // Staff Attendance
+    Route::post('staff-attendance/check-in', [StaffAttendanceController::class, 'checkIn'])->name('staff-attendance.check-in');
+    Route::post('staff-attendance/check-out', [StaffAttendanceController::class, 'checkOut'])->name('staff-attendance.check-out');
+    Route::resource('staff-attendance', StaffAttendanceController::class);
+
+    // Holidays
+    Route::resource('holidays', HolidayController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
     // Academics
     Route::resource('subjects', SubjectController::class);
@@ -81,12 +102,21 @@ Route::middleware('auth')->group(function () {
     Route::resource('messages', MessageController::class)->only(['update', 'destroy']);
 
     // Fees
+    Route::get('fees/generate', [FeeController::class, 'generateInvoices'])->name('fees.generate');
+    Route::post('fees/generate', [FeeController::class, 'generateInvoices'])->name('fees.generate.store');
     Route::resource('fees', FeeController::class);
     Route::get('fees/export-csv', [FeeController::class, 'exportCsv'])->name('fees.export-csv');
+    Route::resource('fee-structures', FeeStructureController::class);
+    Route::resource('fee-categories', FeeCategoryController::class);
     Route::resource('payments', PaymentController::class);
     Route::get('payments/export-csv', [PaymentController::class, 'exportCsv'])->name('payments.export-csv');
+    Route::get('payments/parent/history', [PaymentController::class, 'parentHistory'])->name('payments.parent.history');
+    Route::post('payments/parent/pay', [PaymentController::class, 'parentPay'])->name('payments.parent.pay');
     Route::resource('receipts', ReceiptController::class);
     Route::get('receipts/export-csv', [ReceiptController::class, 'exportCsv'])->name('receipts.export-csv');
+    Route::resource('discounts', DiscountController::class);
+    Route::get('finance/dashboard', [FinanceDashboardController::class, 'index'])->name('finance.dashboard');
+    Route::get('finance/reports', [FinanceReportController::class, 'index'])->name('finance.reports');
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class);

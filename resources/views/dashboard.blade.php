@@ -147,7 +147,7 @@ use Carbon\Carbon;
                 </a>
             @endif
             @if(Auth::user()->hasRole('Teacher'))
-                <a href="{{ route('attendances.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition shadow-sm">
+                <a href="{{ route('attendance.index') }}" class="inline-flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition shadow-sm">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>

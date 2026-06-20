@@ -114,7 +114,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700 p-6">
         <h3 class="text-base font-bold text-gray-900 dark:text-slate-200 mb-4">Quick Actions</h3>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <a href="{{ route('attendances.index') }}" class="flex items-center gap-3 p-3 bg-sky-50 dark:bg-sky-900/30 rounded-xl hover:bg-sky-100 dark:hover:bg-sky-800/40 transition border border-sky-100 dark:border-sky-800/40">
+            <a href="{{ route('attendance.index') }}" class="flex items-center gap-3 p-3 bg-sky-50 dark:bg-sky-900/30 rounded-xl hover:bg-sky-100 dark:hover:bg-sky-800/40 transition border border-sky-100 dark:border-sky-800/40">
                 <div class="w-9 h-9 rounded-lg bg-sky-500 flex items-center justify-center">
                     <i class="fa-solid fa-check-to-slot text-white text-sm"></i>
                 </div>

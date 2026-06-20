@@ -80,32 +80,36 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-1">
+                        @php
+                            $_fs = $fee->status;
+                            $_fs_class = match($_fs) {
+                                'paid' => 'bg-emerald-100 text-emerald-700',
+                                'pending' => 'bg-amber-100 text-amber-700',
+                                'partial' => 'bg-blue-100 text-blue-700',
+                                'overdue' => 'bg-red-100 text-red-700',
+                                'cancelled' => 'bg-gray-100 text-gray-500',
+                                default => 'bg-gray-100 text-gray-700',
+                            };
+                        @endphp
                         <button @click="
-                            $dispatch('view-fee', @json([
+                            $dispatch('view-fee', {!! json_encode([
                                 'invoice_number' => $fee->invoice_number,
                                 'student_name' => $fee->student->user->name ?? '—',
                                 'amount' => number_format($fee->amount, 2),
                                 'due_date' => $fee->due_date ? $fee->due_date->format('Y-m-d') : '—',
-                                'status' => $fee->status,
-                                'status_class' => match($fee->status) {
-                                    'paid' => 'bg-emerald-100 text-emerald-700',
-                                    'pending' => 'bg-amber-100 text-amber-700',
-                                    'partial' => 'bg-blue-100 text-blue-700',
-                                    'overdue' => 'bg-red-100 text-red-700',
-                                    'cancelled' => 'bg-gray-100 text-gray-500',
-                                    default => 'bg-gray-100 text-gray-700',
-                                },
-                                'status_display' => ucfirst($fee->status),
+                                'status' => $_fs,
+                                'status_class' => $_fs_class,
+                                'status_display' => ucfirst($_fs),
                                 'admission_number' => $fee->student->admission_number ?? '—',
                                 'description' => $fee->description,
-                            ]));
+                            ]) !!});
                             $dispatch('open-modal', 'view-fee');
                         " title="View" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                         @if(Auth::user()->hasRole('Admin'))
                         <button @click="
-                            $dispatch('edit-fee', @json([
+                            $dispatch('edit-fee', {!! json_encode([
                                 'id' => $fee->id,
                                 'student_id' => $fee->student_id,
                                 'invoice_number' => $fee->invoice_number,
@@ -113,7 +117,7 @@
                                 'due_date' => $fee->due_date ? $fee->due_date->format('Y-m-d') : '',
                                 'status' => $fee->status,
                                 'description' => $fee->description,
-                            ]));
+                            ]) !!});
                             $dispatch('open-modal', 'edit-fee');
                         " title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-sky-600 hover:text-white hover:bg-sky-600 rounded-lg transition">
                             <i class="fa-solid fa-pen-to-square"></i>
