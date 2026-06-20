@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::post('conversations/{conversation}/read', [ConversationController::class, 'markAsRead'])->name('conversations.read');
     Route::post('conversations/{conversation}/archive', [ConversationController::class, 'toggleArchive'])->name('conversations.archive');
     Route::post('conversations/{conversation}/pin', [ConversationController::class, 'togglePin'])->name('conversations.pin');
+    Route::get('conversations/unread/total', [ConversationController::class, 'totalUnreadCount'])->name('conversations.unread.total');
     Route::get('conversations-list/json', [ConversationController::class, 'conversationListJson'])->name('conversations.list.json');
     Route::get('users/search', [ConversationController::class, 'searchUsers'])->name('users.search');
     Route::get('users/available', [ConversationController::class, 'getAvailableUsersJson'])->name('users.available');

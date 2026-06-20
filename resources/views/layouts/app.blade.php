@@ -46,6 +46,32 @@
                     </div>
 
                     <div class="flex items-center gap-2">
+                        <a href="{{ route('conversations.index') }}"
+                           x-data="{ unreadCount: 0 }"
+                           x-init="
+                               const refresh = async () => {
+                                   try {
+                                       const res = await fetch('{{ route('conversations.unread.total') }}');
+                                       const data = await res.json();
+                                       unreadCount = data.count;
+                                   } catch(e) {}
+                               };
+                               refresh();
+                               document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+                               window.addEventListener('focus', refresh);
+                               if (window.Echo) {
+                                   Echo.channel('notifications.{{ auth()->id() }}')
+                                       .listen('.notification.received', (e) => {
+                                           if (e.type === 'message') unreadCount++;
+                                       });
+                               }
+                           "
+                           class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10 rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+                            <i class="fa-regular fa-message text-xl"></i>
+                            <span x-show="unreadCount > 0"
+                                  class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[20px] h-5 px-1 text-xs font-bold text-white bg-sky-500 rounded-full"
+                                  x-text="unreadCount > 9 ? '9+' : unreadCount"></span>
+                        </a>
                         <a href="{{ route('notifications.index') }}" class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10 rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
                             <i class="fa-regular fa-bell text-xl"></i>
                             @php $headerUnread = \App\Models\AppNotification::forUser(auth()->user())->unread()->count(); @endphp

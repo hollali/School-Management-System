@@ -154,10 +154,34 @@ $isParent = $user->hasRole('Parent');
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">Communication</p>
                 </div>
 
-                <x-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')" label="Messages">
-                    <i class="fa-solid fa-message w-5 text-center shrink-0 text-[15px]"></i>
-                    <span x-show="!collapsed" class="truncate">{{ __('Messages') }}</span>
-                </x-nav-link>
+                <div class="relative"
+                    x-data="{ unreadCount: 0 }"
+                    x-init="
+                        const refresh = async () => {
+                            try {
+                                const res = await fetch('{{ route('conversations.unread.total') }}');
+                                const data = await res.json();
+                                unreadCount = data.count;
+                            } catch(e) {}
+                        };
+                        refresh();
+                        document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+                        window.addEventListener('focus', refresh);
+                        if (window.Echo) {
+                            Echo.channel('notifications.{{ auth()->id() }}')
+                                .listen('.notification.received', (e) => {
+                                    if (e.type === 'message') unreadCount++;
+                                });
+                        }
+                    ">
+                    <x-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')" label="Messages">
+                        <i class="fa-solid fa-message w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Messages') }}</span>
+                    </x-nav-link>
+                    <span x-show="unreadCount > 0"
+                        class="absolute top-0.5 left-4 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-sky-500 rounded-full"
+                        x-text="unreadCount > 9 ? '9+' : unreadCount"></span>
+                </div>
 
                 <x-nav-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')" label="Announcements">
                     <i class="fa-solid fa-bullhorn w-5 text-center shrink-0 text-[15px]"></i>

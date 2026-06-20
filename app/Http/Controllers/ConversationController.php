@@ -432,6 +432,20 @@ class ConversationController extends Controller
         return response()->json($users);
     }
 
+    public function totalUnreadCount(Request $request)
+    {
+        $user = $request->user();
+
+        $conversationIds = Conversation::forUser($user->id)->pluck('id');
+
+        $count = Message::whereIn('conversation_id', $conversationIds)
+            ->where('sender_id', '!=', $user->id)
+            ->whereDoesntHave('reads', fn($q) => $q->where('user_id', $user->id))
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
     public function conversationListJson(Request $request)
     {
         $user = $request->user();
