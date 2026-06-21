@@ -62,19 +62,21 @@ class AttendanceService
 
     public function getOrCreateAttendance(int $classId, string $date, ?int $subjectId = null, ?int $teacherId = null): Attendance
     {
-        $query = Attendance::firstOrNew([
-            'class_id' => $classId,
-            'attendance_date' => $date,
-            'subject_id' => $subjectId,
-        ]);
+        $dateParsed = Carbon::parse($date);
 
-        if (!$query->exists) {
-            $query->fill([
+        $query = Attendance::where('class_id', $classId)
+            ->whereDate('attendance_date', $dateParsed)
+            ->first();
+
+        if (!$query) {
+            $query = Attendance::create([
+                'class_id' => $classId,
+                'attendance_date' => $dateParsed,
+                'subject_id' => $subjectId,
                 'created_by' => Auth::id(),
                 'teacher_id' => $teacherId ?? Auth::user()?->teacher?->id,
                 'notes' => null,
             ]);
-            $query->save();
 
             $schoolClass = SchoolClass::find($classId);
             if ($schoolClass) {
@@ -90,6 +92,8 @@ class AttendanceService
 
             ActivityLogger::log('attendance-created', 'Attendance', $query->id,
                 'Created attendance for class #' . $classId . ' on ' . $date);
+        } elseif ($subjectId !== null && $query->subject_id !== $subjectId) {
+            $query->update(['subject_id' => $subjectId]);
         }
 
         return $query;

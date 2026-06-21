@@ -97,9 +97,29 @@ $isParent = $user->hasRole('Parent');
                             <span x-show="!collapsed" class="truncate">{{ __('Attendance') }}</span>
                         </x-nav-link>
 
-                        <x-nav-link :href="route('exams.index')" :active="request()->routeIs('exams.*')" label="Exams">
+                        <x-nav-link :href="route('exams.index')" :active="request()->routeIs('exams.*') && !request()->routeIs('question-bank.*', 'exam-schedules.*', 'grading.*', 'exam-reports.*')" label="Exams">
                             <i class="fa-solid fa-pen-to-square w-5 text-center shrink-0 text-[15px]"></i>
                             <span x-show="!collapsed" class="truncate">{{ __('Exams') }}</span>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('questions.index')" :active="request()->routeIs('questions.*')" label="Question Bank">
+                            <i class="fa-solid fa-circle-question w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('Question Bank') }}</span>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('exam-schedules.index')" :active="request()->routeIs('exam-schedules.*')" label="Schedules">
+                            <i class="fa-solid fa-calendar-days w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('Schedules') }}</span>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('grading.index')" :active="request()->routeIs('grading.*')" label="Grading">
+                            <i class="fa-solid fa-check-double w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('Grading') }}</span>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('exam-reports.index')" :active="request()->routeIs('exam-reports.*')" label="Reports">
+                            <i class="fa-solid fa-chart-column w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('Reports') }}</span>
                         </x-nav-link>
 
                         <x-nav-link :href="route('results.index')" :active="request()->routeIs('results.*')" label="Results">
@@ -117,6 +137,16 @@ $isParent = $user->hasRole('Parent');
                         <x-nav-link :href="route('attendance.student.show')" :active="request()->routeIs('attendance.*')" label="Attendance">
                             <i class="fa-solid fa-check-to-slot w-5 text-center shrink-0 text-[15px]"></i>
                             <span x-show="!collapsed" class="truncate">{{ __('Attendance') }}</span>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('student.exams')" :active="request()->routeIs('student.exams*') && !request()->routeIs('student.exams.history*')" label="My Exams">
+                            <i class="fa-solid fa-pen-to-square w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('My Exams') }}</span>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('student.exams.history')" :active="request()->routeIs('student.exams.history*')" label="Exam History">
+                            <i class="fa-solid fa-clock-rotate-left w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('Exam History') }}</span>
                         </x-nav-link>
 
                         <x-nav-link :href="route('assignments.index')" :active="request()->routeIs('assignments.*')" label="Homework">
@@ -235,6 +265,26 @@ $isParent = $user->hasRole('Parent');
                     <x-nav-link :href="route('holidays.index')" :active="request()->routeIs('holidays.*')" label="Holidays">
                         <i class="fa-solid fa-calendar-xmark w-5 text-center shrink-0 text-[15px]"></i>
                         <span x-show="!collapsed" class="truncate">{{ __('Holidays') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('questions.index')" :active="request()->routeIs('questions.*')" label="Question Bank">
+                        <i class="fa-solid fa-circle-question w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Question Bank') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('exam-schedules.index')" :active="request()->routeIs('exam-schedules.*')" label="Exam Schedules">
+                        <i class="fa-solid fa-calendar-days w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Exam Schedules') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('exam-reports.index')" :active="request()->routeIs('exam-reports.*')" label="Exam Reports">
+                        <i class="fa-solid fa-chart-column w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Exam Reports') }}</span>
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('academic-terms.index')" :active="request()->routeIs('academic-terms.*')" label="Academic Terms">
+                        <i class="fa-solid fa-calendar-week w-5 text-center shrink-0 text-[15px]"></i>
+                        <span x-show="!collapsed" class="truncate">{{ __('Academic Terms') }}</span>
                     </x-nav-link>
 
                     <x-nav-link :href="route('finance.dashboard')" :active="request()->routeIs('finance.*')" label="Finance">

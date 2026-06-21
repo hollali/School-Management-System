@@ -69,7 +69,10 @@ class SubmissionController extends Controller
         $data = $request->validate([
             'assignment_id' => ['required', 'exists:assignments,id'],
             'content'       => ['nullable', 'string'],
-            'attachment'    => ['nullable', 'file', 'max:51200', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,bmp,svg,zip,mp4,avi,mov,wmv,webm,mkv,flv'],
+            'attachment'    => ['nullable', 'file', 'max:2048', 'mimes:txt,pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,bmp,svg,zip,mp4,avi,mov,wmv,webm,mkv,flv'],
+        ], [
+            'attachment.max' => 'The file must not be larger than 2MB.',
+            'attachment.mimes' => 'The file type is not supported.',
         ]);
 
         $assignment = Assignment::findOrFail($data['assignment_id']);
@@ -142,7 +145,10 @@ class SubmissionController extends Controller
 
         $data = $request->validate([
             'content'       => ['nullable', 'string'],
-            'attachment'    => ['nullable', 'file', 'max:51200', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,bmp,svg,zip,mp4,avi,mov,wmv,webm,mkv,flv'],
+            'attachment'    => ['nullable', 'file', 'max:2048', 'mimes:txt,pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,bmp,svg,zip,mp4,avi,mov,wmv,webm,mkv,flv'],
+        ], [
+            'attachment.max' => 'The file must not be larger than 2MB.',
+            'attachment.mimes' => 'The file type is not supported.',
         ]);
 
         if ($request->hasFile('attachment')) {

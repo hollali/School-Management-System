@@ -16,6 +16,12 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageReactionController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamAttemptController;
+use App\Http\Controllers\ExamReportController;
+use App\Http\Controllers\ExamScheduleController;
+use App\Http\Controllers\GradingController;
+use App\Http\Controllers\QuestionBankController;
+use App\Http\Controllers\AcademicTermController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\FeeCategoryController;
@@ -77,6 +83,43 @@ Route::middleware('auth')->group(function () {
     // Academics
     Route::resource('subjects', SubjectController::class);
     Route::resource('exams', ExamController::class);
+    Route::post('exams/{exam}/publish', [ExamController::class, 'publish'])->name('exams.publish');
+    Route::post('exams/{exam}/questions', [ExamController::class, 'addQuestions'])->name('exams.questions.add');
+    Route::delete('exams/{exam}/questions/{questionId}', [ExamController::class, 'removeQuestion'])->name('exams.questions.remove');
+    Route::post('exams/{exam}/publish-results', [ExamController::class, 'publishResults'])->name('exams.publish-results');
+
+    // Academic Terms
+    Route::resource('academic-terms', AcademicTermController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    // Question Bank
+    Route::resource('question-bank', QuestionBankController::class)->names('questions');
+
+    // Exam Schedules
+    Route::get('exam-schedules', [ExamScheduleController::class, 'index'])->name('exam-schedules.index');
+    Route::post('exam-schedules', [ExamScheduleController::class, 'store'])->name('exam-schedules.store');
+    Route::put('exam-schedules/{schedule}', [ExamScheduleController::class, 'update'])->name('exam-schedules.update');
+    Route::delete('exam-schedules/{schedule}', [ExamScheduleController::class, 'destroy'])->name('exam-schedules.destroy');
+
+    // Student Exam Attempts
+    Route::get('student/exams', [ExamAttemptController::class, 'index'])->name('student.exams');
+    Route::get('student/exams/{exam}/start', [ExamAttemptController::class, 'start'])->name('student.exams.start');
+    Route::post('student/exams/{exam}/save-answer', [ExamAttemptController::class, 'saveAnswer'])->name('student.exams.save');
+    Route::post('student/exams/{exam}/submit', [ExamAttemptController::class, 'submit'])->name('student.exams.submit');
+    Route::get('student/exam-attempts/{attempt}/result', [ExamAttemptController::class, 'result'])->name('student.exams.result');
+    Route::get('student/exam-history', [ExamAttemptController::class, 'history'])->name('student.exams.history');
+
+    // Grading
+    Route::get('grading', [GradingController::class, 'index'])->name('grading.index');
+    Route::get('grading/{attempt}', [GradingController::class, 'grade'])->name('grading.grade');
+    Route::post('grading/{attempt}/save', [GradingController::class, 'saveGrade'])->name('grading.save');
+    Route::post('grading/{attempt}/finalize', [GradingController::class, 'finalize'])->name('grading.finalize');
+    Route::get('grading/exam/{exam}', [GradingController::class, 'examSubmissions'])->name('grading.exam');
+
+    // Exam Reports
+    Route::get('exam-reports', [ExamReportController::class, 'index'])->name('exam-reports.index');
+    Route::get('exam-reports/{exam}', [ExamReportController::class, 'examDetail'])->name('exam-reports.exam-detail');
+    Route::get('exam-reports/export/csv', [ExamReportController::class, 'exportCsv'])->name('exam-reports.export-csv');
+
     Route::resource('results', ResultController::class);
 
     // Homework

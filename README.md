@@ -29,7 +29,7 @@ A Laravel 13 application for managing schools with strict Role-Based Access Cont
 - **Attendance tracking** — daily records per class with per-student status (present/absent/late/excused). Weekends and holidays auto-excluded from summaries. Staff attendance with self check-in/check-out. Role-based dashboards with low-attendance alerts. 5 report types (student, class, subject, teacher, date range). Audit trail for all changes.
 - **Holiday management** — Admins define public, school, and exam holidays. Recurring support. Attendance summaries skip holiday/weekend dates automatically. Visual warnings when marking attendance on non-school days.
 - **Assignments & submissions** — teachers create, students submit, teachers grade with feedback
-- **Exams & results** — exam scheduling, score entry with grade calculation
+- **Examinations** — full exam lifecycle: question bank (MCQ, true/false, essay, fill-in), exam creation with subject/class/term association, online & offline modes, scheduled delivery with conflict detection, student exam interface with timer/fullscreen/tab-switch detection/auto-save, auto-grading for objective questions, manual grading for subjective answers, results publishing, and analytics reports with CSV export
 - **Fee management** — multi-level fee structures (categories → structures → items), auto invoice generation, student discounts (percentage/fixed, scoped per-student/class/global), payment processing with status tracking (completed/failed/refunded), receipt generation, overdue detection and notifications, finance dashboard, and 5 report types
 - **Real-time messaging** — conversations with participants, group support, reactions, file attachments, reply/forward/edit/delete, typing indicators, Echo broadcasting
 - **Notifications** — centralized notification list with broadcast events
@@ -97,8 +97,8 @@ composer test
 | `app/Events/` | Broadcast events and domain events (messaging, attendance, fees, submissions) |
 | `app/Listeners/` | Event listeners for notifications and broadcasting |
 | `app/Helpers/` | `ActivityLogger` for audit trails |
-| `app/Services/` | Business logic services: `AttendanceService`, `FeeService` |
-| `app/Models/` | Eloquent models: User, Student, Teacher, Attendance, Fee, Payment, Receipt, Holiday, Conversation, Message, etc. |
+| `app/Services/` | Business logic services: `AttendanceService`, `FeeService`, `ExamService` |
+| `app/Models/` | Eloquent models: User, Student, Teacher, Attendance, Fee, Payment, Receipt, Holiday, Conversation, Message, Exam, ExamAttempt, ExamSchedule, QuestionBank, etc. |
 | `database/migrations/` | Schema migrations for all features |
 | `database/seeders/` | `RolesAndPermissionsSeeder` with granular permissions |
 | `resources/views/` | Role-appropriate Blade views with collapsible sidebar layout |
@@ -112,6 +112,13 @@ composer test
 | `resources/views/fee-categories/` | Fee category management |
 | `resources/views/discounts/` | Student discount administration |
 | `resources/views/finance/` | Finance dashboard and reports |
+| `resources/views/exams/` | Exam CRUD, show with questions/attempts/schedules |
+| `resources/views/questions/` | Question bank CRUD with search, type/subject filters |
+| `resources/views/exam-schedules/` | Schedule management with conflict detection |
+| `resources/views/exam-attempts/` | Student exam-taking interface, results, history |
+| `resources/views/grading/` | Teacher grading interface for subjective answers |
+| `resources/views/exam-reports/` | Analytics, pass/fail stats, per-question analysis |
+| `resources/views/academic-terms/` | Academic term management |
 | `resources/views/conversations/` | Real-time messaging UI with Alpine.js and Echo |
 | `config/messaging.php` | Messaging configuration (allowed MIME types, etc.) |
 | `routes/web.php` | All application routes organized by feature |

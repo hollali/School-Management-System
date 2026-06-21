@@ -7,6 +7,7 @@
     'searchRoute' => '',
     'perPage' => null,
     'perPageOptions' => [10, 25, 50, 100],
+    'filters' => null,
 ])
 
 <div {{ $attributes->merge(['class' => 'bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden']) }}>

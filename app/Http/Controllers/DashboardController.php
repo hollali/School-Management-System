@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Models\Attendance;
 use App\Models\Conversation;
+use App\Models\Exam;
+use App\Models\ExamAttempt;
+use App\Models\ExamSchedule;
 use App\Models\Fee;
 use App\Models\ParentProfile;
 use App\Models\SchoolClass;
@@ -44,6 +47,9 @@ class DashboardController extends Controller
             'pendingFees' => Fee::where('status', 'pending')->count(),
             'pendingAssignments' => Assignment::where('due_date', '>=', Carbon::now())->count(),
             'activeConversations' => Conversation::count(),
+            'totalExams' => Exam::count(),
+            'upcomingExams' => ExamSchedule::where('start_time', '>', Carbon::now())->count(),
+            'pendingGrading' => ExamAttempt::where('status', 'submitted')->count(),
         ];
 
         return view('dashboards.admin', compact('stats'));
@@ -58,6 +64,8 @@ class DashboardController extends Controller
             'myStudents' => Student::whereIn('id', SchoolClass::where('teacher_id', $teacher->id)->with('students')->get()->pluck('students.*.id')->flatten())->count(),
             'myAssignments' => Assignment::where('teacher_id', $teacher->id)->count(),
             'todayAttendance' => Attendance::where('teacher_id', $teacher->id)->whereDate('attendance_date', Carbon::today())->count(),
+            'myExams' => Exam::where('teacher_id', $teacher->id)->count(),
+            'pendingGrading' => ExamAttempt::whereHas('exam', fn($q) => $q->where('teacher_id', $teacher->id))->where('status', 'submitted')->count(),
         ];
 
         $recentAssignments = Assignment::where('teacher_id', $teacher->id)->latest()->take(5)->get();
@@ -75,6 +83,8 @@ class DashboardController extends Controller
             'subjects' => $student->classes->flatMap->subjects->count(),
             'assignments' => Assignment::whereIn('class_id', $student->classes->pluck('id'))->count(),
             'attendance' => $student->attendanceRecords()->count() ?? 0,
+            'upcomingExams' => ExamSchedule::whereHas('exam', fn($q) => $q->whereIn('class_id', $student->classes->pluck('id')))->where('start_time', '>', Carbon::now())->count(),
+            'completedExams' => ExamAttempt::where('student_id', $student->id)->where('status', 'submitted')->count(),
         ];
 
         $classes = $student->classes;

@@ -53,6 +53,11 @@ class Student extends Model
         return $this->hasMany(Result::class, 'student_id');
     }
 
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class, 'student_id');
+    }
+
     public function scopeSearchByName($query, $name)
     {
         return $query->whereHas('user', function ($q) use ($name) {

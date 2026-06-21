@@ -195,13 +195,14 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Attachment</label>
-                        <div class="mt-1 flex items-center gap-3">
+                        <div class="mt-1 flex items-center gap-3" x-data="{ fileName: '' }">
                             <label class="cursor-pointer inline-flex items-center px-4 py-2.5 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition">
                                 <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                                 Choose file
-                                <input type="file" name="attachment" class="hidden">
+                                <input type="file" name="attachment" class="hidden" @change="fileName = $el.files[0]?.name || ''">
                             </label>
-                            <span class="text-xs text-gray-400 dark:text-slate-500">Max 50 MB</span>
+                            <span class="text-xs text-gray-400 dark:text-slate-500" x-show="!fileName">Max 50 MB</span>
+                            <span class="text-sm text-emerald-600 dark:text-emerald-400 font-medium truncate max-w-[200px]" x-show="fileName" x-text="fileName"></span>
                         </div>
                         @error('attachment')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
                     </div>
