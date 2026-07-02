@@ -90,9 +90,6 @@ composer test
 | `app/Http/Controllers/` | Resource controllers for all entities |
 | `app/Http/Controllers/Admin/` | Admin-only user management |
 | `app/Http/Requests/` | Form request validation |
-| `app/Http/Controllers/` | Resource controllers for all entities |
-| `app/Http/Controllers/Admin/` | Admin-only user management |
-| `app/Http/Requests/` | Form request validation |
 | `app/Policies/` | Authorization policies for roles and ownership |
 | `app/Events/` | Broadcast events and domain events (messaging, attendance, fees, submissions) |
 | `app/Listeners/` | Event listeners for notifications and broadcasting |

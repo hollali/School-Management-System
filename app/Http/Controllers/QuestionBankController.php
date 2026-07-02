@@ -8,11 +8,14 @@ use App\Models\QuestionOption;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class QuestionBankController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', QuestionBank::class);
+
         $user = Auth::user();
         $query = QuestionBank::with('subject', 'options', 'teacher.user');
 
@@ -28,12 +31,16 @@ class QuestionBankController extends Controller
 
     public function create()
     {
+        $this->authorize('create', QuestionBank::class);
+
         $subjects = Subject::orderBy('name')->get();
         return view('questions.create', compact('subjects'));
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', QuestionBank::class);
+
         $data = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
             'question_text' => 'required|string',
@@ -44,6 +51,7 @@ class QuestionBankController extends Controller
             'explanation' => 'nullable|string',
             'tags' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'image' => 'nullable|file|max:2048|mimes:jpg,jpeg,png,gif,bmp,svg,pdf,doc,docx,txt',
             'options' => 'nullable|array',
             'options.*.option_text' => 'required_with:options|string',
             'options.*.is_correct' => 'nullable|boolean',
@@ -53,6 +61,10 @@ class QuestionBankController extends Controller
         $data['teacher_id'] = Auth::user()->teacher?->id;
         $data['is_active'] = $request->boolean('is_active', true);
         $data['tags'] = $request->tags ? array_map('trim', explode(',', $request->tags)) : null;
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('question-images', 'public');
+        }
 
         $question = QuestionBank::create($data);
 
@@ -74,12 +86,16 @@ class QuestionBankController extends Controller
 
     public function show(QuestionBank $question)
     {
+        $this->authorize('view', $question);
+
         $question->load('subject', 'options', 'teacher.user');
         return view('questions.show', compact('question'));
     }
 
     public function edit(QuestionBank $question)
     {
+        $this->authorize('update', $question);
+
         $subjects = Subject::orderBy('name')->get();
         $question->load('options');
         return view('questions.edit', compact('question', 'subjects'));
@@ -87,6 +103,8 @@ class QuestionBankController extends Controller
 
     public function update(Request $request, QuestionBank $question)
     {
+        $this->authorize('update', $question);
+
         $data = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
             'question_text' => 'required|string',
@@ -97,6 +115,7 @@ class QuestionBankController extends Controller
             'explanation' => 'nullable|string',
             'tags' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'image' => 'nullable|file|max:2048|mimes:jpg,jpeg,png,gif,bmp,svg,pdf,doc,docx,txt',
             'options' => 'nullable|array',
             'options.*.id' => 'nullable|exists:question_options,id',
             'options.*.option_text' => 'required_with:options|string',
@@ -106,6 +125,13 @@ class QuestionBankController extends Controller
 
         $data['is_active'] = $request->boolean('is_active', true);
         $data['tags'] = $request->tags ? array_map('trim', explode(',', $request->tags)) : null;
+
+        if ($request->hasFile('image')) {
+            if ($question->image) {
+                Storage::disk('public')->delete($question->image);
+            }
+            $data['image'] = $request->file('image')->store('question-images', 'public');
+        }
 
         $question->update($data);
 
@@ -143,6 +169,8 @@ class QuestionBankController extends Controller
 
     public function destroy(QuestionBank $question)
     {
+        $this->authorize('delete', $question);
+
         ActivityLogger::log('question-deleted', 'QuestionBank', $question->id, "Deleted question: {$question->question_text}");
         $question->delete();
         return redirect()->route('questions.index')->with('success', 'Question deleted successfully.');

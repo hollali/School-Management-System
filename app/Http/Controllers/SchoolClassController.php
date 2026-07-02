@@ -11,7 +11,14 @@ class SchoolClassController extends Controller
 {
     public function index()
     {
-        $classes = SchoolClass::with('teacher', 'students')->latest()->paginate(15);
+        $this->authorize('viewAny', SchoolClass::class);
+
+        $user = auth()->user();
+
+        $classes = SchoolClass::with('teacher', 'students')
+            ->when($user->hasRole('Teacher'), fn ($q) => $q->where('teacher_id', $user->teacher?->id))
+            ->latest()->paginate(15);
+
         $teachers = Teacher::with('user')->orderBy('id')->get();
 
         return view('classes.index', compact('classes', 'teachers'));
@@ -19,6 +26,8 @@ class SchoolClassController extends Controller
 
     public function show(SchoolClass $class)
     {
+        $this->authorize('view', $class);
+
         $class->load('teacher.user', 'students.user', 'subjects');
 
         $assignedStudentIds = $class->students->pluck('id');
@@ -31,6 +40,8 @@ class SchoolClassController extends Controller
 
     public function assignStudent(Request $request, SchoolClass $class)
     {
+        $this->authorize('update', $class);
+
         $data = $request->validate([
             'student_id' => ['required', 'exists:students,id'],
         ]);
@@ -53,6 +64,8 @@ class SchoolClassController extends Controller
 
     public function removeStudent(SchoolClass $class, Student $student)
     {
+        $this->authorize('update', $class);
+
         $class->students()->detach($student->id);
 
         return back()->with('success', 'Student removed from class successfully.');
@@ -112,6 +125,8 @@ class SchoolClassController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', SchoolClass::class);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'grade_level' => ['nullable', 'string', 'max:255'],
@@ -133,6 +148,8 @@ class SchoolClassController extends Controller
 
     public function update(Request $request, SchoolClass $class)
     {
+        $this->authorize('update', $class);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'grade_level' => ['nullable', 'string', 'max:255'],
@@ -149,6 +166,8 @@ class SchoolClassController extends Controller
 
     public function destroy(SchoolClass $class)
     {
+        $this->authorize('delete', $class);
+
         $class->delete();
 
         return redirect()->route('classes.index')->with('success', 'Class deleted successfully.');

@@ -10,6 +10,8 @@ class SubjectController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Subject::class);
+
         $subjects = Subject::with('teacher')->latest()->paginate(15);
         $teachers = Teacher::with('user')->orderBy('id')->get();
 
@@ -23,6 +25,8 @@ class SubjectController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Subject::class);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'code' => ['nullable', 'string', 'max:50'],
@@ -43,6 +47,8 @@ class SubjectController extends Controller
 
     public function update(Request $request, Subject $subject)
     {
+        $this->authorize('update', $subject);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'code' => ['nullable', 'string', 'max:50'],
@@ -58,6 +64,8 @@ class SubjectController extends Controller
 
     public function destroy(Subject $subject)
     {
+        $this->authorize('delete', $subject);
+
         $subject->delete();
 
         return redirect()->route('subjects.index')->with('success', 'Subject deleted successfully.');
