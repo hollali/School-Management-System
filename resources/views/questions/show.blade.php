@@ -63,6 +63,19 @@
                 </div>
             @endif
 
+            @if($question->image)
+                <div class="mb-6">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">Attachment</p>
+                    @if(in_array(pathinfo($question->image, PATHINFO_EXTENSION), ['jpg','jpeg','png','gif','bmp','svg']))
+                        <img src="{{ Storage::url($question->image) }}" alt="Question attachment" class="max-w-md rounded-xl border border-gray-200 dark:border-slate-700">
+                    @else
+                        <a href="{{ Storage::url($question->image) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-sm font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition">
+                            <i class="fa-solid fa-file"></i> View Attachment
+                        </a>
+                    @endif
+                </div>
+            @endif
+
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-100 dark:border-slate-700">
                 <div>
                     <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Subject</p>

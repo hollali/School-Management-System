@@ -24,7 +24,7 @@
 </head>
 <body class="font-sans antialiased bg-white dark:bg-slate-900">
     <div class="min-h-screen bg-gray-50 dark:bg-slate-900 lg:flex"
-         x-data="{ collapsed: false }"
+         x-data="{ collapsed: false, darkMode: document.documentElement.classList.contains('dark') }"
          x-init="try { collapsed = localStorage.getItem('sidebarCollapsed') === 'true' } catch(e) { collapsed = false }"
          @toggle-sidebar.window="collapsed = !collapsed; try { localStorage.setItem('sidebarCollapsed', collapsed) } catch(e) {}">
 
@@ -37,7 +37,7 @@
             <header class="sticky top-0 z-30 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700/50 shadow-sm">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-4">
-                        <button @click="$dispatch('open-mobile-sidebar')" class="lg:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+                        <button @click="window.innerWidth >= 1024 ? $dispatch('toggle-sidebar') : $dispatch('open-mobile-sidebar')" class="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
                             <i class="fa-solid fa-bars text-xl"></i>
                         </button>
                         <div>
@@ -97,13 +97,17 @@
                                     <i class="fa-regular fa-user w-4 text-center text-gray-400 dark:text-slate-500"></i>
                                     Profile
                                 </a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-white/5 transition">
-                                        <i class="fa-solid fa-right-from-bracket w-4 text-center text-gray-400 dark:text-slate-500"></i>
-                                        Log Out
-                                    </button>
-                                </form>
+                                <button type="button" @click="$dispatch('set-confirmation', {
+                                    action: '{{ route('logout') }}',
+                                    method: 'POST',
+                                    title: 'Confirm Logout',
+                                    message: 'Are you sure you want to log out?',
+                                    confirmLabel: 'Logout',
+                                    confirmClass: 'bg-red-600 hover:bg-red-700'
+                                })" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                                    <i class="fa-solid fa-right-from-bracket w-4 text-center text-gray-400 dark:text-slate-500"></i>
+                                    Log Out
+                                </button>
                             </div>
                         </div>
                     </div>

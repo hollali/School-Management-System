@@ -14,7 +14,7 @@
     </x-slot>
 
     <div class="py-6">
-        <form action="{{ route('questions.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('questions.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
@@ -70,6 +70,18 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Explanation (shown after answering)</label>
                         <textarea name="explanation" rows="2"
                             class="block w-full rounded-xl border-gray-200 dark:border-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm py-2.5 px-4 dark:text-slate-200 dark:bg-slate-700">{{ old('explanation') }}</textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Attachment (image, document, etc.)</label>
+                        <div x-data="{ fileName: '' }" class="mt-1 flex items-center gap-3">
+                            <label class="cursor-pointer inline-flex items-center px-4 py-2.5 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition">
+                                <i class="fa-solid fa-upload mr-2"></i> Choose file
+                                <input type="file" name="image" accept="image/*,.pdf,.doc,.docx" class="hidden" @change="fileName = $el.files[0]?.name || ''">
+                            </label>
+                            <span class="text-xs text-gray-400 dark:text-slate-500" x-show="!fileName">Max 2MB</span>
+                            <span class="text-sm text-emerald-600 dark:text-emerald-400 font-medium truncate max-w-[200px]" x-show="fileName" x-text="fileName"></span>
+                        </div>
+                        @error('image')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition">

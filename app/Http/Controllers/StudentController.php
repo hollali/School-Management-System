@@ -22,6 +22,7 @@ class StudentController extends Controller
 
     public function index(Request $request): View
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user->hasRole('Admin') || $user->hasRole('Teacher')) {
@@ -40,9 +41,13 @@ class StudentController extends Controller
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->searchByName($search)
-                  ->orSearchByAdmissionNumber($search)
-                  ->orSearchByEmail($search);
+                $q->where(function ($q) use ($search) {
+                    $q->searchByName($search);
+                })->orWhere(function ($q) use ($search) {
+                    $q->searchByEmail($search);
+                })->orWhere(function ($q) use ($search) {
+                    $q->searchByAdmissionNumber($search);
+                });
             });
         }
 
@@ -59,8 +64,8 @@ class StudentController extends Controller
         }
 
         $students = $query->latest()->paginate(15)->appends($request->query());
-        $classes = SchoolClass::orderBy('name')->get();
-        $parents = ParentProfile::with('user')->orderBy('id')->get();
+        $classes = SchoolClass::orderBy('name', 'asc')->get();
+        $parents = ParentProfile::with('user')->orderBy('id', 'asc')->get();
 
         return view('students.index', compact('students', 'classes', 'parents'));
     }
@@ -111,6 +116,7 @@ class StudentController extends Controller
 
     public function show(Student $student): View
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user->hasRole('Student') && $user->student?->id !== $student->id) {
@@ -186,6 +192,7 @@ class StudentController extends Controller
 
     public function exportCsv(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user->hasRole('Admin') || $user->hasRole('Teacher')) {
@@ -204,9 +211,13 @@ class StudentController extends Controller
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->searchByName($search)
-                  ->orSearchByAdmissionNumber($search)
-                  ->orSearchByEmail($search);
+                $q->where(function ($q) use ($search) {
+                    $q->searchByName($search);
+                })->orWhere(function ($q) use ($search) {
+                    $q->searchByEmail($search);
+                })->orWhere(function ($q) use ($search) {
+                    $q->searchByAdmissionNumber($search);
+                });
             });
         }
 

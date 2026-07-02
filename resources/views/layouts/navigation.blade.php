@@ -23,9 +23,6 @@ $isParent = $user->hasRole('Parent');
                     <x-application-logo class="block h-8 w-auto shrink-0 text-gray-900 dark:text-white" />
                     <span x-show="!collapsed" class="text-base font-bold text-gray-900 dark:text-white truncate whitespace-nowrap">{{ config('app.name', 'School') }}</span>
                 </a>
-                <button @click="$dispatch('toggle-sidebar')" class="ms-auto hidden lg:flex p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 transition shrink-0" aria-label="Toggle sidebar">
-                    <i class="fa-solid" :class="collapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
-                </button>
                 <button @click="open = false" class="lg:hidden p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10 rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" aria-label="Close menu">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
@@ -45,10 +42,15 @@ $isParent = $user->hasRole('Parent');
 
                 {{-- Academics --}}
                 @if($isAdmin || $isTeacher || $isStudent)
-                    <div x-show="!collapsed" class="pt-4 pb-1.5 px-3">
-                        <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">Academics</p>
-                    </div>
+                    <div x-data="{ open: localStorage.getItem('sidebar-academics') !== 'false' }" x-init="$watch('open', val => localStorage.setItem('sidebar-academics', val))">
+                        <div x-show="!collapsed" class="pt-4 pb-1.5 px-3 cursor-pointer select-none" @click="open = !open">
+                            <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">
+                                <i class="fa-solid fa-chevron-down mr-1 transition-transform duration-200" :class="{ '-rotate-90': !open }"></i>
+                                Academics
+                            </p>
+                        </div>
+                        <div x-show="open">
 
                     @if($isAdmin || $isTeacher)
                         <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')" label="Students">
@@ -82,14 +84,21 @@ $isParent = $user->hasRole('Parent');
                             <span x-show="!collapsed" class="truncate">{{ __('My Classes') }}</span>
                         </x-nav-link>
                     @endif
+                        </div>
+                    </div>
                 @endif
 
                 {{-- Assessment --}}
                 @if($isTeacher || $isStudent || $isParent)
-                    <div x-show="!collapsed" class="pt-4 pb-1.5 px-3">
-                        <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">Assessment</p>
-                    </div>
+                    <div x-data="{ open: localStorage.getItem('sidebar-assessment') !== 'false' }" x-init="$watch('open', val => localStorage.setItem('sidebar-assessment', val))">
+                        <div x-show="!collapsed" class="pt-4 pb-1.5 px-3 cursor-pointer select-none" @click="open = !open">
+                            <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">
+                                <i class="fa-solid fa-chevron-down mr-1 transition-transform duration-200" :class="{ '-rotate-90': !open }"></i>
+                                Assessment
+                            </p>
+                        </div>
+                        <div x-show="open">
 
                     @if($isTeacher)
                         <x-nav-link :href="route('attendance.dashboard')" :active="request()->routeIs('attendance.*')" label="Attendance">
@@ -176,71 +185,84 @@ $isParent = $user->hasRole('Parent');
                             <span x-show="!collapsed" class="truncate">{{ __('Results') }}</span>
                         </x-nav-link>
                     @endif
+                        </div>
+                    </div>
                 @endif
 
                 {{-- Communication --}}
-                <div x-show="!collapsed" class="pt-4 pb-1.5 px-3">
-                    <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">Communication</p>
-                </div>
+                <div x-data="{ open: localStorage.getItem('sidebar-communication') !== 'false' }" x-init="$watch('open', val => localStorage.setItem('sidebar-communication', val))">
+                    <div x-show="!collapsed" class="pt-4 pb-1.5 px-3 cursor-pointer select-none" @click="open = !open">
+                        <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">
+                            <i class="fa-solid fa-chevron-down mr-1 transition-transform duration-200" :class="{ '-rotate-90': !open }"></i>
+                            Communication
+                        </p>
+                    </div>
+                    <div x-show="open">
+                        <div class="relative"
+                            x-data="{ unreadCount: 0 }"
+                            x-init="
+                                const refresh = async () => {
+                                    try {
+                                        const res = await fetch('{{ route('conversations.unread.total') }}');
+                                        const data = await res.json();
+                                        unreadCount = data.count;
+                                    } catch(e) {}
+                                };
+                                refresh();
+                                document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+                                window.addEventListener('focus', refresh);
+                                if (window.Echo) {
+                                    Echo.channel('notifications.{{ auth()->id() }}')
+                                        .listen('.notification.received', (e) => {
+                                            if (e.type === 'message') unreadCount++;
+                                        });
+                                }
+                            ">
+                            <x-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')" label="Messages">
+                                <i class="fa-solid fa-message w-5 text-center shrink-0 text-[15px]"></i>
+                                <span x-show="!collapsed" class="truncate">{{ __('Messages') }}</span>
+                            </x-nav-link>
+                            <span x-show="unreadCount > 0"
+                                class="absolute top-0.5 left-4 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-sky-500 rounded-full"
+                                x-text="unreadCount > 9 ? '9+' : unreadCount"></span>
+                        </div>
 
-                <div class="relative"
-                    x-data="{ unreadCount: 0 }"
-                    x-init="
-                        const refresh = async () => {
-                            try {
-                                const res = await fetch('{{ route('conversations.unread.total') }}');
-                                const data = await res.json();
-                                unreadCount = data.count;
-                            } catch(e) {}
-                        };
-                        refresh();
-                        document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
-                        window.addEventListener('focus', refresh);
-                        if (window.Echo) {
-                            Echo.channel('notifications.{{ auth()->id() }}')
-                                .listen('.notification.received', (e) => {
-                                    if (e.type === 'message') unreadCount++;
-                                });
-                        }
-                    ">
-                    <x-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')" label="Messages">
-                        <i class="fa-solid fa-message w-5 text-center shrink-0 text-[15px]"></i>
-                        <span x-show="!collapsed" class="truncate">{{ __('Messages') }}</span>
-                    </x-nav-link>
-                    <span x-show="unreadCount > 0"
-                        class="absolute top-0.5 left-4 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-sky-500 rounded-full"
-                        x-text="unreadCount > 9 ? '9+' : unreadCount"></span>
-                </div>
+                        <x-nav-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')" label="Announcements">
+                            <i class="fa-solid fa-bullhorn w-5 text-center shrink-0 text-[15px]"></i>
+                            <span x-show="!collapsed" class="truncate">{{ __('Announcements') }}</span>
+                        </x-nav-link>
 
-                <x-nav-link :href="route('announcements.index')" :active="request()->routeIs('announcements.*')" label="Announcements">
-                    <i class="fa-solid fa-bullhorn w-5 text-center shrink-0 text-[15px]"></i>
-                    <span x-show="!collapsed" class="truncate">{{ __('Announcements') }}</span>
-                </x-nav-link>
-
-                <div class="relative"
-                    x-data="{ unreadCount: {{ \App\Models\AppNotification::forUser(auth()->user())->unread()->count() }} }"
-                    x-init="
-                        if (window.Echo) {
-                            Echo.channel('notifications.{{ auth()->id() }}')
-                                .listen('.notification.received', () => { unreadCount++; });
-                        }
-                    ">
-                    <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')" label="Notifications">
-                        <i class="fa-solid fa-bell w-5 text-center shrink-0 text-[15px]"></i>
-                        <span x-show="!collapsed" class="truncate">{{ __('Notifications') }}</span>
-                    </x-nav-link>
-                    <span x-show="unreadCount > 0"
-                        class="absolute top-0.5 left-4 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full"
-                        x-text="unreadCount > 9 ? '9+' : unreadCount"></span>
+                        <div class="relative"
+                            x-data="{ unreadCount: {{ \App\Models\AppNotification::forUser(auth()->user())->unread()->count() }} }"
+                            x-init="
+                                if (window.Echo) {
+                                    Echo.channel('notifications.{{ auth()->id() }}')
+                                        .listen('.notification.received', () => { unreadCount++; });
+                                }
+                            ">
+                            <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')" label="Notifications">
+                                <i class="fa-solid fa-bell w-5 text-center shrink-0 text-[15px]"></i>
+                                <span x-show="!collapsed" class="truncate">{{ __('Notifications') }}</span>
+                            </x-nav-link>
+                            <span x-show="unreadCount > 0"
+                                class="absolute top-0.5 left-4 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full"
+                                x-text="unreadCount > 9 ? '9+' : unreadCount"></span>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Administration --}}
                 @if($isAdmin)
-                    <div x-show="!collapsed" class="pt-4 pb-1.5 px-3">
-                        <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">Administration</p>
-                    </div>
+                    <div x-data="{ open: localStorage.getItem('sidebar-administration') !== 'false' }" x-init="$watch('open', val => localStorage.setItem('sidebar-administration', val))">
+                        <div x-show="!collapsed" class="pt-4 pb-1.5 px-3 cursor-pointer select-none" @click="open = !open">
+                            <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">
+                                <i class="fa-solid fa-chevron-down mr-1 transition-transform duration-200" :class="{ '-rotate-90': !open }"></i>
+                                Administration
+                            </p>
+                        </div>
+                        <div x-show="open">
 
                     <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" label="User Management">
                         <i class="fa-solid fa-users-gear w-5 text-center shrink-0 text-[15px]"></i>
@@ -321,14 +343,21 @@ $isParent = $user->hasRole('Parent');
                         <i class="fa-solid fa-percent w-5 text-center shrink-0 text-[15px]"></i>
                         <span x-show="!collapsed" class="truncate">{{ __('Discounts') }}</span>
                     </x-nav-link>
+                        </div>
+                    </div>
                 @endif
 
                 {{-- Finance --}}
                 @if($isStudent || $isParent)
-                    <div x-show="!collapsed" class="pt-4 pb-1.5 px-3">
-                        <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">Finance</p>
-                    </div>
+                    <div x-data="{ open: localStorage.getItem('sidebar-finance') !== 'false' }" x-init="$watch('open', val => localStorage.setItem('sidebar-finance', val))">
+                        <div x-show="!collapsed" class="pt-4 pb-1.5 px-3 cursor-pointer select-none" @click="open = !open">
+                            <div class="border-t border-gray-200 dark:border-slate-700/50 mb-1.5"></div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400/80">
+                                <i class="fa-solid fa-chevron-down mr-1 transition-transform duration-200" :class="{ '-rotate-90': !open }"></i>
+                                Finance
+                            </p>
+                        </div>
+                        <div x-show="open">
 
                     @if($isStudent)
                     <x-nav-link :href="route('finance.dashboard')" :active="request()->routeIs('finance.*')" label="Finance">
@@ -353,6 +382,8 @@ $isParent = $user->hasRole('Parent');
                         <i class="fa-solid fa-receipt w-5 text-center shrink-0 text-[15px]"></i>
                         <span x-show="!collapsed" class="truncate">{{ __('Receipts') }}</span>
                     </x-nav-link>
+                        </div>
+                    </div>
                 @endif
             </div>
 
@@ -366,16 +397,16 @@ $isParent = $user->hasRole('Parent');
                     </div>
                 </div>
 
-                <button @click="document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'))"
+                <button @click="darkMode = !darkMode; document.documentElement.classList.toggle('dark', darkMode); localStorage.setItem('darkMode', darkMode)"
                     class="w-full flex items-center gap-2 px-3 py-2.5 mb-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-gray-900 dark:text-slate-300 dark:bg-white/5 dark:hover:bg-white/10 dark:hover:text-white rounded-lg transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
                     :class="collapsed ? 'justify-center' : ''">
-                    <template x-if="document.documentElement.classList.contains('dark')">
+                    <template x-if="darkMode">
                         <i class="fa-solid fa-sun"></i>
                     </template>
-                    <template x-if="!document.documentElement.classList.contains('dark')">
+                    <template x-if="!darkMode">
                         <i class="fa-solid fa-moon"></i>
                     </template>
-                    <span x-show="!collapsed" x-text="document.documentElement.classList.contains('dark') ? 'Light Mode' : 'Dark Mode'"></span>
+                    <span x-show="!collapsed" x-text="darkMode ? 'Light Mode' : 'Dark Mode'"></span>
                 </button>
 
                 <form method="POST" action="{{ route('logout') }}">
